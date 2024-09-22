@@ -1,6 +1,7 @@
 <template>
   <div>
     <Employee />
+    <p class="text-red-500">sabhdubwua</p>
   </div>
 </template>
 
