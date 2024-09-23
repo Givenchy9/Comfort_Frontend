@@ -6,13 +6,16 @@ import { RouterLink, RouterView } from 'vue-router'
   <header>
     <nav>
       <RouterLink to="/" class="text-red-500">Home</RouterLink>
-      <RouterLink to="/about">About</RouterLink>
+      <RouterLink to="/Login">Login</RouterLink>
     </nav>
   </header>
   <RouterView />
 </template>
 
 <style scoped>
+/* html.dark{
+  color-scheme: dark;
+} */
 header {
   line-height: 1.5;
   max-height: 100vh;

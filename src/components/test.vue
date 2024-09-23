@@ -4,7 +4,31 @@
 
         <div class="bg-gray-100 p-6 rounded-md shadow-md">
             <form @submit.prevent="save" id="check-register-form">
-                
+                <!-- Form Fields -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="employeeName" class="block mb-1">Name</label>
+                        <input v-model="employee.name" type="text" id="employeeName" required
+                            class="w-full p-2 border border-gray-300 rounded-md" placeholder="Enter Employee Name" />
+                    </div>
+                    <div>
+                        <label for="employeeAddress" class="block mb-1">Employee Address</label>
+                        <input v-model="employee.address" type="text" id="employeeAddress" required
+                            class="w-full p-2 border border-gray-300 rounded-md" placeholder="Enter Employee Address" />
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <label for="employeePhone" class="block mb-1">Phone</label>
+                    <input v-model="employee.phone" type="text" id="employeePhone" required
+                        class="w-full p-2 border border-gray-300 rounded-md" placeholder="Enter Phone Number" />
+                </div>
+
+                <!-- Save Button -->
+                <div class="mt-6 text-center">
+                    <button type="submit"
+                        class="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">Save</button>
+                </div>
             </form>
         </div>
 
