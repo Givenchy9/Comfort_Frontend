@@ -5,7 +5,7 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import Employee from '@/components/Employee.vue'
 </script>
 <style>

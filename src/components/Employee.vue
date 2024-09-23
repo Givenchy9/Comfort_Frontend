@@ -1,207 +1,164 @@
 <template>
-    <div class="container bg-red-500">
-        <h3 align="center" class="mt-5">Employee Management</h3>
-        <div class="row">
-            <div class="col-md-2">
-            </div>
-            <div class="col-md-8">
-                <div class="form-area">
-                    <form @submit.prevent="save" id="check-register-form">
+    <div class="container mx-auto p-5 bg-red-500">
+        <h3 class="text-center text-white text-xl font-bold mb-5">Employee Management</h3>
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label>Employee Name</label>
-                                <v-text-field v-model="employee.name" label="Employee Name" required>
-                                </v-text-field>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label>Employee Address</label>
-                                <v-text-field v-model="employee.address" label="Employee Address" required>
-                                </v-text-field>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <label>Phone</label>
-                                <v-text-field v-model="employee.phone" label="Employee Address" required>
-                                </v-text-field>
-
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12 mt-3">
-
-                                <v-btn type="submit" color="success" form="check-register-form">Save</v-btn>
-
-
-                            </div>
-                        </div>
-                    </form>
+        <div class="bg-gray-100 p-6 rounded-md shadow-md">
+            <form @submit.prevent="save" id="check-register-form">
+                <!-- Form Fields -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="employeeName" class="block mb-1">Employee Name</label>
+                        <input v-model="employee.name" type="text" id="employeeName" required
+                            class="w-full p-2 border border-gray-300 rounded-md" placeholder="Enter Employee Name" />
+                    </div>
+                    <div>
+                        <label for="employeeAddress" class="block mb-1">Employee Address</label>
+                        <input v-model="employee.address" type="text" id="employeeAddress" required
+                            class="w-full p-2 border border-gray-300 rounded-md" placeholder="Enter Employee Address" />
+                    </div>
                 </div>
 
-                <v-table theme="dark">
-                    <thead>
-                        <tr>
-                            <th class="text-left">
-                                Employee ID
-                            </th>
-                            <th class="text-left">
-                                Employee Name
-                            </th>
+                <div class="mt-4">
+                    <label for="employeePhone" class="block mb-1">Phone</label>
+                    <input v-model="employee.phone" type="text" id="employeePhone" required
+                        class="w-full p-2 border border-gray-300 rounded-md" placeholder="Enter Phone Number" />
+                </div>
 
-                            <th class="text-left">
-                                Address
-                            </th>
+                <!-- Save Button -->
+                <div class="mt-6 text-center">
+                    <button type="submit"
+                        class="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">Save</button>
+                </div>
+            </form>
+        </div>
 
-                            <th class="text-left">
-                                Phone
-                            </th>
-                            <th class="text-left">
-                                Action
-                            </th>
-
-
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="employee in result" :key="employee.id">
-                            <td>{{ employee.id }}</td>
-                            <td>{{ employee.name }}</td>
-                            <td>{{ employee.address }}</td>
-                            <td>{{ employee.phone }}</td>
-                            <td>
-                                <v-btn type="button" color="info" @click="edit(employee)">Edit</v-btn>
-
-                                <v-btn type="button" color="danger" @click="remove(employee)">Delete</v-btn>
-                            </td>
-                        </tr>
-                    </tbody>
-                </v-table>
-
-            </div>
+        <!-- Employee Table -->
+        <div class="mt-8 bg-gray-100 p-6 rounded-md shadow-md">
+            <table class="min-w-full table-auto border-collapse">
+                <thead>
+                    <tr class="bg-gray-200 text-left">
+                        <th class="px-4 py-2 border">Employee ID</th>
+                        <th class="px-4 py-2 border">Employee Name</th>
+                        <th class="px-4 py-2 border">Address</th>
+                        <th class="px-4 py-2 border">Phone</th>
+                        <th class="px-4 py-2 border">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="employee in result" :key="employee.id" class="bg-white hover:bg-gray-100">
+                        <td class="px-4 py-2 border">{{ employee.id }}</td>
+                        <td class="px-4 py-2 border">{{ employee.name }}</td>
+                        <td class="px-4 py-2 border">{{ employee.address }}</td>
+                        <td class="px-4 py-2 border">{{ employee.phone }}</td>
+                        <td class="px-4 py-2 border">
+                            <button @click="edit(employee)"
+                                class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Edit</button>
+                            <button @click="remove(employee)"
+                                class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 ml-2">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
-
-
 </template>
 
-
 <script>
-
-
-
-import axios from 'axios';
-
-
+import axios from "axios";
 
 export default {
-    name: 'Employee',
+    name: "Employee",
     data() {
         return {
-            result: {},
+            result: [],
             employee: {
-                id: '',
-                name: '',
-                address: '',
-                phone: ''
-
-
-            }
-        }
+                id: "",
+                name: "",
+                address: "",
+                phone: "",
+            },
+        };
     },
     created() {
         this.EmployeeLoad();
     },
-    mounted() {
-        console.log("mounted() called.......");
-
-    },
-
     methods: {
         EmployeeLoad() {
-            var page = "http://127.0.0.1:8000/api/employee";
-            axios.get(page)
-                .then(
-                    ({ data }) => {
-                        console.log(data);
-                        this.result = data;
-                    }
-                );
+            console.log("Fetching employees...");
+            axios
+                .get("http://127.0.0.1:8000/api/employee")
+                .then(({ data }) => {
+                    console.log("Employees loaded:", data);
+                    this.result = data;
+                })
+                .catch((error) => {
+                    console.error("Error loading employees:", error);
+                });
         },
-
-
         save() {
-            if (this.employee.id == '') {
+            console.log("Save button clicked", this.employee);
+            if (!this.employee.id) {
                 this.saveData();
-            }
-            else {
+            } else {
                 this.updateData();
             }
-
         },
         saveData() {
-            axios.post("http://127.0.0.1:8000/api/employee", this.employee)
-                .then(
-                    ({ data }) => {
-                        this.EmployeeLoad();
-                        this.employee.name = '';
-                        this.employee.address = '',
-                            this.employee.phone = ''
-                        this.id = ''
-                    }
-                )
-
+            console.log("Saving new employee...", this.employee);
+            axios
+                .post("http://127.0.0.1:8000/api/employee", this.employee)
+                .then(({ data }) => {
+                    console.log("Employee saved:", data);
+                    this.EmployeeLoad();
+                    this.resetForm();
+                })
+                .catch((error) => {
+                    console.error("Error saving employee:", error);
+                });
         },
         edit(employee) {
-            this.employee = employee;
-
+            console.log("Editing employee:", employee);
+            this.employee = { ...employee }; // Copy the employee object to avoid direct binding
         },
         updateData() {
-            var editrecords = 'http://127.0.0.1:8000/api/employee/' + this.employee.id;
-            axios.put(editrecords, this.employee)
-                .then(
-                    ({ data }) => {
-                        this.employee.name = '';
-                        this.employee.address = '',
-                            this.employee.phone = ''
-                        this.id = ''
-                        alert("Updated!!!");
-                        this.EmployeeLoad();
-                    }
-                );
-
+            console.log("Updating employee:", this.employee);
+            axios
+                .put(`http://127.0.0.1:8000/api/employee/${this.employee.id}`, this.employee)
+                .then(({ data }) => {
+                    console.log("Employee updated:", data);
+                    this.EmployeeLoad();
+                    this.resetForm();
+                    alert("Updated!");
+                })
+                .catch((error) => {
+                    console.error("Error updating employee:", error);
+                });
         },
-
         remove(employee) {
-
-            var url = `http://127.0.0.1:8000/api/employee/${employee.id}`;
-
-
-            axios.delete(url);
-            alert("Deleteddd");
-            this.EmployeeLoad();
-        }
-    }
-}
+            console.log("Deleting employee:", employee);
+            axios
+                .delete(`http://127.0.0.1:8000/api/employee/${employee.id}`)
+                .then(() => {
+                    console.log("Employee deleted");
+                    this.EmployeeLoad();
+                    alert("Deleted");
+                })
+                .catch((error) => {
+                    console.error("Error deleting employee:", error);
+                });
+        },
+        resetForm() {
+            this.employee = {
+                id: "",
+                name: "",
+                address: "",
+                phone: "",
+            };
+        },
+    },
+};
 </script>
 
 <style scoped>
-.form-area {
-    padding: 20px;
-    margin-top: 20px;
-    background-color: #0b0b0b;
-    color: #fffcfc;
-}
-
-.bi-trash-fill {
-    color: red;
-    font-size: 18px;
-}
-
-.bi-pencil {
-    color: green;
-    font-size: 18px;
-    margin-left: 20px;
-}
+/* Optionally you can add more specific styles here */
 </style>
