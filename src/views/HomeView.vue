@@ -5,5 +5,5 @@
 </template>
 
 <script setup lang="ts">
-import Darkmode from '@/components/Darkmode.vue'
+import Header from '@/components/Header.vue'
 </script>
