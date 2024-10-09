@@ -18,10 +18,12 @@ const router = useRouter();
 
 // Logout function
 const handleLogout = async () => {
+  // Remove token from localStorage
+  localStorage.removeItem('token'); // Make sure 'token' is the key you used for storing the token
   try {
     await AuthService.logout(); // Call the logout function
     // Redirect to the login page or clear user state
-    router.push('/register_validation'); // Adjust the route as necessary
+    router.push('/Login'); // Adjust the route as necessary
   } catch (error) {
     console.error('Error during logout:', error);
   }

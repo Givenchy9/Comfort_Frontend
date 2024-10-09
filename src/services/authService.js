@@ -17,30 +17,23 @@ export const AuthService = {
     async logout() {
         try {
             const token = localStorage.getItem('authToken');
-            
-            // Check if the token exists
+    
             if (!token) {
                 console.log('No token found, user may already be logged out.');
                 return;
             }
-
-            // Make a logout request to the API using POST
-            const response = await axios.post(`${API_URL}logout`, {}, {
+    
+            const response = await axios.get(`${API_URL}logout`, {
                 headers: {
-                    'Authorization': `Bearer ${token}` // Include the token in the Authorization header
+                    'Authorization': `Bearer ${token}`
                 }
             });
-
-            // Log the response to the console
+    
             console.log('Logout successful:', response.data);
-
-            // Remove the token from localStorage
             localStorage.removeItem('authToken');
-            
-            // Optionally, redirect the user to the login page or home page
-            router.push('/login'); // Adjust the path as needed
+            router.push('/login');
         } catch (err) {
             console.error('Logout failed:', err.response?.data?.message || 'Logout failed');
         }
-    },
+    },      
 };
