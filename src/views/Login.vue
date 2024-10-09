@@ -149,7 +149,7 @@ export default {
   }
 }
 </style> -->
-<template>
+<!-- <template>
   <div>
     <h1>Login</h1>
     <form @submit.prevent="login">
@@ -182,6 +182,49 @@ export default {
         // Handle successful login (e.g., store token, redirect to dashboard, etc.)
         localStorage.setItem('authToken', response.data.token); // Save token if returned in the response
         router.push('/dashboard'); // Redirect to a dashboard or home page after login
+      } catch (err) {
+        this.error = err.response?.data?.message || 'Login failed';
+      }
+    },
+  },
+};
+</script> -->
+<template>
+  <div>
+    <h1>Login</h1>
+    <form @submit.prevent="login">
+      <input type="email" v-model="email" placeholder="Email" required />
+      <input type="password" v-model="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+    <p v-if="error">{{ error }}</p>
+
+    <!-- Logout button -->
+    <button @click="handleLogout">Logout</button>
+  </div>
+</template>
+
+<script>
+import { AuthService } from '../services/authService';
+import router from '../router'; // Import your router if using vue-router
+
+export default {
+  data() {
+    return {
+      email: '',
+      password: '',
+      error: '',
+    };
+  },
+  methods: {
+    async login() {
+      try {
+        const response = await AuthService.login({ email: this.email, password: this.password });
+        console.log('Login successful', response);
+
+        // Store token in localStorage
+        localStorage.setItem('authToken', response.data.token);
+        router.push('/'); // Redirect to a dashboard or home page after login
       } catch (err) {
         this.error = err.response?.data?.message || 'Login failed';
       }
