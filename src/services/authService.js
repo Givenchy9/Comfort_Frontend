@@ -24,8 +24,8 @@ export const AuthService = {
                 return;
             }
 
-            // Make a logout request to the API
-            const response = await axios.get(`${API_URL}logout`, {
+            // Make a logout request to the API using POST
+            const response = await axios.post(`${API_URL}logout`, {}, {
                 headers: {
                     'Authorization': `Bearer ${token}` // Include the token in the Authorization header
                 }

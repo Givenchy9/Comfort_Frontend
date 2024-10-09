@@ -25,9 +25,32 @@ const router = createRouter({
     {
       path: '/register_validation',
       name: 'register2',
-      component: () => import('../views/register2.vue')
+      component: () => import('../views/register2.vue'),
+      meta: { requiresAuth: true }
     },
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token');  // Get token from localStorage
+  console.log('Token:', token);
+  // If the user is logged in (token exists)
+  if (token) {
+    // If the route is login or register, redirect to home
+    if (to.name === 'Login' || to.name === 'register1') {
+      next({ name: 'home' });
+    } else {
+      next();  // Proceed to other routes
+    }
+  } else {
+    // If the route requires auth and the token doesn't exist
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+      next({ name: 'Login' });
+    } else {
+      next();  // Proceed to the route
+    }
+  }
+});
+
 
 export default router

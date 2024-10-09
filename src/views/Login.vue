@@ -218,17 +218,23 @@ export default {
   },
   methods: {
     async login() {
+      this.error = ''; // Clear any previous errors
       try {
         const response = await AuthService.login({ email: this.email, password: this.password });
         console.log('Login successful', response);
 
-        // Store token in localStorage
-        localStorage.setItem('authToken', response.data.token);
+        // Store token in localStorage (make sure this is the correct key)
+        localStorage.setItem('token', response.data.token);
         router.push('/'); // Redirect to a dashboard or home page after login
       } catch (err) {
-        this.error = err.response?.data?.message || 'Login failed';
+        console.error('Login error:', err); // Log error for debugging
+        this.error = err.response?.data?.message || 'Login failed'; // Set error message for display
       }
     },
+    handleLogout() {
+      localStorage.removeItem('token'); // Remove token from localStorage on logout
+      router.push('/Login'); // Redirect to login page after logout
+    }
   },
 };
 </script>
