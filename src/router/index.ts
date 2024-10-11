@@ -28,10 +28,14 @@ const router = createRouter({
       component: () => import('../views/register2.vue')
     },
     {
-      path: '/hello',
-      name: 'hello',
-      component: () => import('../components/Header.vue')
-    },
+  path: '/hello',
+  name: 'hello',
+  components: {
+    default: () => import('@/components/Header.vue'),
+    footer: () => import('@/components/Footer.vue')
+  }
+}
+
   ]
 }) 
 
