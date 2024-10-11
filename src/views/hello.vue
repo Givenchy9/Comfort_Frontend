@@ -1,9 +1,13 @@
+<script setup>
+    import Header from "@/components/Header.vue";
+    import Footer from "@/components/Footer.vue";
+</script>
+
 <template>
-    <header/>
-    <footer/>
+  <div>
+    hi
+  </div>
+  <Header />
+  <Footer />
 </template>
 
-<script setup lang="ts">
-    import header from "@/components/Header.vue";
-    import footer from "@/components/Footer.vue";
-</script>
