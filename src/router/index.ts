@@ -27,7 +27,12 @@ const router = createRouter({
       name: 'register2',
       component: () => import('../views/register2.vue')
     },
+    {
+      path: '/hello',
+      name: 'hello',
+      component: () => import('../components/Header.vue')
+    },
   ]
-})
+}) 
 
 export default router
