@@ -1,0 +1,142 @@
+<template>
+  <div class="property-page">
+    <aside class="filters">
+      <div class="filter-controls">
+        <button class="small-button" @click="checkAll">Check All</button>
+        <button class="small-button" @click="uncheckAll">Uncheck All</button>
+      </div>
+
+      <div v-for="(filter, index) in filters" :key="index">
+        <input 
+          type="checkbox" 
+          :id="'filter-' + index"
+          v-model="filters[index]" 
+        />
+        <label :for="'filter-' + index">Checkbox {{ index + 1 }}</label>
+      </div>
+    </aside>
+
+    <main class="properties-grid">
+      <div v-for="(property, index) in filteredProperties" :key="index" class="property-card" @click="goToPropertyDetail(property.id)">
+        <div class="property-image">
+          <img :src="property.image" alt="Property Image" />
+        </div>
+        <h3>{{ property.address }}</h3>
+        <p>{{ property.info }}</p>
+        <div class="property-actions">
+          <button @click.stop="openDeleteConfirmModal(index)">🗑️</button>
+        </div>
+      </div>
+    </main>
+
+    <div v-if="isDeleteConfirmModalOpen" class="modal">
+      <div class="modal-content">
+        <h3>Weet je zeker dat je deze woning wilt verwijderen?</h3>
+        <p>{{ properties[deleteIndex]?.address }}</p>
+        <div class="modal-actions">
+          <button @click="confirmDelete">Verwijder</button>
+          <button @click="closeDeleteConfirmModal">Annuleer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      filters: Array(6).fill(false),
+      properties: [
+        { id: '1', address: 'Vlinderstraat 44, 4456 RU', info: 'Details over dit huis.', image: 'https://f.hubspotusercontent30.net/hubfs/4890439/_system/Website%20images/Woningfotografie_05.jpg' },
+        { id: '2', address: 'Ceintuurbaan 23, 7261 WO', info: 'Details over dit huis.', image: 'https://f.hubspotusercontent30.net/hubfs/4890439/_system/Website%20images/Woningfotografie_05.jpg' },
+        { id: '3', address: 'Bloemstraat 50A, 9140 BR', info: 'Details over dit huis.', image: 'https://f.hubspotusercontent30.net/hubfs/4890439/_system/Website%20images/Woningfotografie_05.jpg' },
+        { id: '4', address: 'Kamperweg 23, 8181 PE', info: 'Details over dit huis.', image: 'https://f.hubspotusercontent30.net/hubfs/4890439/_system/Website%20images/Woningfotografie_05.jpg' },
+        { id: '5', address: 'Zwanenstraat 12, 1016 VB', info: 'Details over dit huis.', image: 'https://f.hubspotusercontent30.net/hubfs/4890439/_system/Website%20images/Woningfotografie_05.jpg' },
+        { id: '6', address: 'Rozenlaan 75, 3001 NH', info: 'Details over dit huis.', image: 'https://f.hubspotusercontent30.net/hubfs/4890439/_system/Website%20images/Woningfotografie_05.jpg' }
+      ],
+      isDeleteConfirmModalOpen: false,
+      deleteIndex: null
+    };
+  },
+  computed: {
+    filteredProperties() {
+      return this.properties; // Return the properties without filtering for now
+    }
+  },
+  methods: {
+    checkAll() {
+      this.filters = this.filters.map(() => true);
+    },
+    uncheckAll() {
+      this.filters = this.filters.map(() => false);
+    },
+    goToPropertyDetail(id) {
+      this.$router.push({ name: 'PropertyDetail', params: { id } }); // Navigate to the detail page
+    },
+    openDeleteConfirmModal(index) {
+      this.isDeleteConfirmModalOpen = true;
+      this.deleteIndex = index;
+    },
+    closeDeleteConfirmModal() {
+      this.isDeleteConfirmModalOpen = false;
+      this.deleteIndex = null;
+    },
+    confirmDelete() {
+      this.properties.splice(this.deleteIndex, 1);
+      this.closeDeleteConfirmModal();
+    }
+  }
+};
+</script>
+
+<style scoped>
+.property-page {
+  display: flex;
+}
+.filters {
+  width: 20%;
+}
+.properties-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  flex-grow: 1;
+}
+.property-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  position: relative;
+}
+.property-image img {
+  width: 100%;
+  height: auto;
+}
+.property-actions {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+}
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+}
+</style>

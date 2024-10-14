@@ -1,5 +1,6 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import { createRouter, createWebHistory } from "vue-router";
+import HomeView from "../views/HomeView.vue";
+import PropertyDetail from "../views/PropertyDetail.vue"; // Correct import here
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,9 +13,6 @@ const router = createRouter({
     {
       path: '/Login',
       name: 'Login',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/Login.vue')
     },
     {
@@ -27,7 +25,18 @@ const router = createRouter({
       name: 'register2',
       component: () => import('../views/register2.vue')
     },
+    {
+      path: '/huizen',
+      name: 'huizen',
+      component: () => import('../views/huizen.vue')
+    },
+    {
+      path: '/property/:id', // New route for property details
+      name: 'PropertyDetail',
+      component: PropertyDetail, // Link to the PropertyDetail component
+      props: true, // Pass parameters as props
+    },
   ]
 })
 
-export default router
+export default router;
