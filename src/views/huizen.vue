@@ -139,4 +139,11 @@ export default {
   display: flex;
   justify-content: space-between;
 }
+
+.small-button {
+  border: none;
+  background: #ccc;
+  color: white;
+  cursor: pointer;
+}
 </style>
