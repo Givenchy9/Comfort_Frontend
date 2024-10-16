@@ -4,9 +4,6 @@
 </script>
 
 <template>
-  <div>
-    hi
-  </div>
   <Header />
   <Footer />
 </template>

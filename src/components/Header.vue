@@ -16,7 +16,7 @@
         </span>
         <div class="  absolute left-0 hidden group-hover:block bg-white rounded-xl mt-1">
           <button class="bg-blue-400 border-black border-2 rounded-xl">
-            <a class="p-2 max-w-44 block overflow-hidden text-ellipsis whitespace-nowrap pr-4" href="index.html">HOME</a>
+            <a class="p-2 max-w-44 block overflow-hidden text-ellipsis whitespace-nowrap pr-4" href="/">HOME</a>
           </button>
         </div>
       </div>
@@ -32,7 +32,7 @@
           <span class="p-12"> <i class="fa-solid fa-gear"></i> </span>
           <div class="ml-8 absolute left-0 hidden group-hover:block bg-white rounded-sm mt-1">
             <button class="bg-blue-400 border-black border-2">
-              <a class="p-2 block overflow-hidden text-ellipsis whitespace-nowrap" href="index.html">Hallo</a>
+              <a class="p-2 block overflow-hidden text-ellipsis whitespace-nowrap" href="/">Hallo</a>
             </button>
           </div>  
         </div>
