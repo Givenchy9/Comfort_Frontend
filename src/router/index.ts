@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
-import PropertyDetail from "../views/PropertyDetail.vue"; // Correct import here
+import PropertyDetail from "../views/PropertyDetail.vue";
+import Header from '../components/Header.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -37,6 +38,6 @@ const router = createRouter({
       props: true, // Pass parameters as props
     },
   ]
-})
+}) 
 
 export default router;
