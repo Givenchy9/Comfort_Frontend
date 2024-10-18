@@ -3,7 +3,7 @@
     <header>
       <h1>Property Detail</h1>
     </header>
-    
+
     <div class="image-gallery">
       <div class="image-container">
         <img :src="property.image" alt="foto van huis" />
@@ -14,10 +14,10 @@
     </div>
 
     <nav class="tabs">
-      <button @click="showTab('photos')">Foto's</button>
-      <button @click="showTab('info')">Informatie</button>
-      <button @click="showTab('highlights')">Bezienswaardigheden</button>
-      <button @click="showTab('reviews')">Reviews</button>
+      <button @click="showTab('photos')" :class="{ active: activeTab === 'photos' }">Foto's</button>
+      <button @click="showTab('info')" :class="{ active: activeTab === 'info' }">Informatie</button>
+      <button @click="showTab('highlights')" :class="{ active: activeTab === 'highlights' }">Bezienswaardigheden</button>
+      <button @click="showTab('reviews')" :class="{ active: activeTab === 'reviews' }">Reviews</button>
     </nav>
 
     <div class="content">
@@ -25,7 +25,7 @@
         <h2>Foto's</h2>
         <p>Hier komen de foto's van de woning.</p>
       </div>
-      
+
       <div v-if="activeTab === 'info'" class="tab-content">
         <h2>Informatie</h2>
         <ul>
@@ -50,12 +50,12 @@
           <li><strong>Zonnepanelen:</strong> {{ property.zonnepanelen }}</li>
         </ul>
       </div>
-      
+
       <div v-if="activeTab === 'highlights'" class="tab-content">
         <h2>Bezienswaardigheden</h2>
         <p>Hier komen de bezienswaardigheden.</p>
       </div>
-      
+
       <div v-if="activeTab === 'reviews'" class="tab-content">
         <h2>Reviews</h2>
         <p>Hier komen de reviews.</p>
@@ -105,6 +105,14 @@ export default {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
+  background-color: #1e1e1e; /* Dark grey background */
+  color: #fff; /* White text for contrast */
+  border-radius: 10px; /* Rounded corners for overall container */
+}
+
+header {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .image-gallery {
@@ -114,8 +122,8 @@ export default {
 
 .image-container {
   flex: 1;
-  border: 2px solid #ccc;
-  border-radius: 8px;
+  border: 2px solid rgba(59, 130, 246, 0.5);
+  border-radius: 10px;
   overflow: hidden;
 }
 
@@ -135,13 +143,19 @@ export default {
   flex: 1;
   padding: 10px;
   border: none;
-  background-color: #f0f0f0;
+  background-color: #2c2c2c; /* Darker grey for tabs */
+  color: white; /* White text */
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, transform 0.3s; /* Added transition for transform */
+  border-radius: 10px; /* Rounded corners for buttons */
 }
 
 .tabs button:hover {
-  background-color: #e0e0e0;
+  background-color: #3c3c3c; /* Slightly lighter grey on hover */
+}
+
+.tabs button.active {
+  background-color: rgb(59, 130, 246); /* Active tab color */
 }
 
 .content {
@@ -149,9 +163,10 @@ export default {
 }
 
 .tab-content {
-  border: 1px solid #ccc;
+  border: 1px solid rgba(59, 130, 246, 0.5);
   padding: 10px;
-  border-radius: 8px;
+  border-radius: 10px; /* Rounded corners for tab content */
+  background-color: #2c2c2c; /* Dark grey for content area */
 }
 
 footer {
