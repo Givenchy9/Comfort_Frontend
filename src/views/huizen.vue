@@ -1,6 +1,10 @@
 <template>
   <div class="property-page">
     <aside class="filters">
+      <div class="results-count">
+        Aantal resultaten: {{ filteredProperties.length }}
+      </div>
+      
       <div class="filter-controls">
         <button class="small-button" @click="checkAll">Check All</button>
         <button class="small-button" @click="uncheckAll">Uncheck All</button>
@@ -46,6 +50,7 @@
           <div class="detail-row">
             <p class="property-detail"><strong>Straatnaam:</strong> {{ property.straatnaam }}</p>
             <p class="property-detail"><strong>Postcode:</strong> {{ property.postcode }}</p>
+            <p class="property-detail"><strong>Prijs:</strong> € {{ property.prijs }}</p>
           </div>
           <div class="detail-row">
             <p class="property-detail"><strong>Oppervlakte Huis:</strong> {{ property.oppervlakte_huis }} m²</p>
@@ -72,17 +77,17 @@
 </template>
 
 <script>
-import axios from 'axios'; // Import axios to make API calls
+import axios from 'axios';
 
 export default {
   data() {
     return {
-      filters: Array(4).fill(false), // Checkboxes for zwembad, garage, tuin, zonnepanelen
-      sliders: Array(3).fill(1), // Sliders initialized to 1
-      properties: [], // Initialize with an empty array for houses data
+      filters: Array(4).fill(false),
+      sliders: Array(3).fill(1),
+      properties: [],
       isDeleteConfirmModalOpen: false,
       deleteIndex: null,
-      defaultImage: 'https://via.placeholder.com/150', // Replace with your stock image URL
+      defaultImage: 'https://via.placeholder.com/150',
       checkboxLabels: [
         'Zwembad', 
         'Garage', 
@@ -93,7 +98,6 @@ export default {
   },
   computed: {
     filteredProperties() {
-      // Filter properties based on the selected features
       return this.properties.filter(property => {
         const hasZwembad = this.filters[0] ? property.zwembad === "ja" : true;
         const hasGarage = this.filters[1] ? property.garage === "ja" : true;
@@ -105,14 +109,13 @@ export default {
     }
   },
   mounted() {
-    // Fetch the houses data from the API when the component is mounted
     this.fetchHouses();
   },
   methods: {
     async fetchHouses() {
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/huizen');
-        this.properties = response.data; // Update properties with the data from the API
+        this.properties = response.data;
       } catch (error) {
         console.error('Error fetching houses:', error);
       }
@@ -124,7 +127,7 @@ export default {
       this.filters = this.filters.map(() => false);
     },
     goToPropertyDetail(id) {
-      this.$router.push({ name: 'PropertyDetail', params: { id } }); // Navigate to the detail page
+      this.$router.push({ name: 'PropertyDetail', params: { id } });
     },
     openDeleteConfirmModal(index) {
       this.isDeleteConfirmModalOpen = true;
@@ -146,13 +149,19 @@ export default {
 .property-page {
   display: flex;
   padding: 20px;
-  background-color: #1e1e1e; /* Dark grey background */
-  color: #fff; /* White text for contrast */
+  background-color: #1e1e1e;
+  color: #fff;
+}
+
+.results-count {
+  color: #fff;
+  margin-bottom: 16px;
+  font-size: 1.2em;
 }
 
 .filters {
-  width: 30%;
-  background: #2c2c2c; /* Darker grey for filter section */
+  width: 25%;
+  background: #2c2c2c;
   border-radius: 10px;
   padding: 20px;
   margin-right: 20px;
@@ -199,14 +208,8 @@ export default {
   display: block;
   background: #c8ccd4;
   border-radius: 12px;
-  transition: background 0.2s ease;
-  
+  transition: background 0.2s ease;  
 }
-
-.checkbox-wrapper-51 label {
-  margin-left: px; /* Adjust this value as needed */
-}
-
 
 .checkbox-wrapper-51 .toggle span {
   position: absolute;
@@ -237,7 +240,7 @@ export default {
 }
 
 .checkbox-wrapper-51 label {
-  margin-left: 5px; /* Adjust this value as needed */
+  margin-left: 5px;
 }
 
 .checkbox-wrapper-51 input[type="checkbox"]:checked + .toggle:before {
@@ -260,7 +263,7 @@ export default {
 
 .properties-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive columns */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
   gap: 16px;
   flex-grow: 1;
 }
@@ -268,48 +271,48 @@ export default {
 .property-card {
   border: 1px solid rgba(59, 130, 246, 0.5);
   border-radius: 10px;
-  padding: 16px; /* Increased padding for better spacing */
-  height: auto; /* Changed to auto to accommodate content */
+  padding: 16px; 
+  height: auto; 
   cursor: pointer;
   position: relative;
-  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Added shadow transition */
-  background-color: #fff; /* Set a white background for better readability */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; 
+  background-color: #fff; 
 }
 
 .property-card:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Added shadow effect on hover */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); 
 }
 
 .property-image img {
-  width: 100%; /* Ensure the image fills the card width */
+  width: 100%; 
   height: 200px;
   object-fit: cover;
-  border-radius: 10px; /* Increased border-radius for a rounded look */
+  border-radius: 10px; 
 }
 
 .property-title {
-  font-size: 1.5em; /* Title size */
+  font-size: 1.5em; 
   font-weight: bold;
   margin: 10px 0;
 }
 
 .property-details {
-  margin-top: 8px; /* Space between title and details */
+  margin-top: 8px; 
 }
 
 .detail-row {
-  display: flex; /* Flexbox for row layout */
-  justify-content: space-between; /* Space items evenly */
-  margin-bottom: 8px; /* Space between rows */
+  display: flex; 
+  justify-content: space-between; 
+  margin-bottom: 8px; 
 }
 
 .property-detail {
-  color: #333; /* Darker text for better readability */
+  color: #333; 
 }
 
 .property-detail strong {
-  color: rgb(59, 130, 246); /* Accent color for labels */
+  color: rgb(59, 130, 246); 
 }
 
 .property-actions {
@@ -324,16 +327,19 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5); 
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 999; 
 }
 
 .modal-content {
   background: #fff;
   padding: 20px;
   border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25); 
+  color: black;
 }
 
 .modal-actions {
@@ -343,49 +349,49 @@ export default {
 
 .small-button {
   border: none;
-  background: rgb(59, 130, 246); /* Primary color */
+  background: rgb(59, 130, 246); 
   color: white;
   cursor: pointer;
-  border-radius: 10px; /* Rounded corners */
-  padding: 8px 12px; /* Padding for better touch */
-  transition: background 0.3s ease; /* Smooth transition */
+  border-radius: 10px; 
+  padding: 8px 12px; 
+  transition: background 0.3s ease; 
 }
 
 .small-button:hover {
-  background: rgba(59, 130, 246, 0.8); /* Darken on hover */
+  background: rgba(59, 130, 246, 0.8); 
 }
 
 .delete-button {
   background: transparent;
   border: none;
   cursor: pointer;
-  color: rgb(255, 0, 0); /* Red color for delete */
-  font-size: 1.5em; /* Increase button size */
+  color: rgb(255, 0, 0); 
+  font-size: 1.5em; 
 }
 
 .confirm-button {
-  background: rgb(59, 130, 246); /* Confirm button color */
+  background: rgb(59, 130, 246); 
   color: white;
   border: none;
-  border-radius: 10px; /* Rounded corners */
-  padding: 8px 12px; /* Padding for better touch */
-  transition: background 0.3s ease; /* Smooth transition */
+  border-radius: 10px; 
+  padding: 8px 12px; 
+  transition: background 0.3s ease; 
 }
 
 .confirm-button:hover {
-  background: rgba(59, 130, 246, 0.8); /* Darken on hover */
+  background: rgba(59, 130, 246, 0.8); 
 }
 
 .cancel-button {
-  background: #ccc; /* Grey for cancel button */
+  background: #ccc; 
   color: black;
   border: none;
-  border-radius: 10px; /* Rounded corners */
-  padding: 8px 12px; /* Padding for better touch */
-  transition: background 0.3s ease; /* Smooth transition */
+  border-radius: 10px; 
+  padding: 8px 12px; 
+  transition: background 0.3s ease; 
 }
 
 .cancel-button:hover {
-  background: rgba(200, 200, 200, 0.8); /* Darken on hover */
+  background: rgba(200, 200, 200, 0.8); 
 }
 </style>
