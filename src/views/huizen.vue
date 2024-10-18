@@ -236,6 +236,10 @@ export default {
   transition: all 0.5s linear;
 }
 
+.checkbox-wrapper-51 label {
+  margin-left: 5px; /* Adjust this value as needed */
+}
+
 .checkbox-wrapper-51 input[type="checkbox"]:checked + .toggle:before {
   background: #1175c7;
 }

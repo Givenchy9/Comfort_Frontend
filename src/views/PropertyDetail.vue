@@ -13,12 +13,28 @@
       </div>
     </div>
 
-    <nav class="tabs">
-      <button @click="showTab('photos')" :class="{ active: activeTab === 'photos' }">Foto's</button>
-      <button @click="showTab('info')" :class="{ active: activeTab === 'info' }">Informatie</button>
-      <button @click="showTab('highlights')" :class="{ active: activeTab === 'highlights' }">Bezienswaardigheden</button>
-      <button @click="showTab('reviews')" :class="{ active: activeTab === 'reviews' }">Reviews</button>
-    </nav>
+    <!-- New Radio Button Slider Section -->
+    <div class="mydict">
+      <div>
+        <label>
+          <input type="radio" name="radio" value="photos" checked @change="showTab('photos')">
+          <span :class="{ active: isActiveTab('photos') }">Foto's</span>
+        </label>
+        <label>
+          <input type="radio" name="radio" value="info" @change="showTab('info')">
+          <span :class="{ active: isActiveTab('info') }">Informatie</span>
+        </label>
+        <label>
+          <input type="radio" name="radio" value="highlights" @change="showTab('highlights')">
+          <span :class="{ active: isActiveTab('highlights') }">Bezienswaardigheden</span>
+        </label>
+        <label>
+          <input type="radio" name="radio" value="reviews" @change="showTab('reviews')">
+          <span :class="{ active: isActiveTab('reviews') }">Reviews</span>
+        </label>
+      </div>
+    </div>
+    <!-- End of Radio Button Slider Section -->
 
     <div class="content">
       <div v-if="activeTab === 'photos'" class="tab-content">
@@ -61,10 +77,6 @@
         <p>Hier komen de reviews.</p>
       </div>
     </div>
-
-    <footer>
-      <p>footer</p>
-    </footer>
   </div>
 </template>
 
@@ -90,7 +102,14 @@ export default {
       } catch (error) {
         console.error('Er is een fout opgetreden bij het ophalen van de woninggegevens:', error.message);
       }
-    }
+    },
+    isActiveTab(tab) {
+      // Determine if the tab is active or should be colored (previous tabs)
+      const tabsOrder = ['photos', 'info', 'highlights', 'reviews'];
+      const currentIndex = tabsOrder.indexOf(this.activeTab);
+      const tabIndex = tabsOrder.indexOf(tab);
+      return tabIndex <= currentIndex; // Return true if the tab is the active one or before it
+    },
   },
   created() {
     // Get the property ID from the route and fetch the details when the component is created
@@ -127,35 +146,62 @@ header {
   overflow: hidden;
 }
 
-.image-container img {
-  width: 100%;
-  height: auto;
-  display: block;
+:focus {
+  outline: 0;
+  border-color: #2260ff;
+  box-shadow: 0 0 0 4px #b5c9fc;
 }
 
-.tabs {
-  margin: 20px 0;
+.mydict div {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+  justify-content: center;
 }
 
-.tabs button {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  background-color: #2c2c2c; /* Darker grey for tabs */
-  color: white; /* White text */
+.mydict input[type="radio"] {
+  clip: rect(0 0 0 0);
+  clip-path: inset(100%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.mydict input[type="radio"]:checked + span {
+  box-shadow: 0 0 0 0.0625em #0043ed;
+  background-color: #d4edda;
+  z-index: 1;
+  color: #0043ed;
+}
+
+label span {
+  display: block;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s; /* Added transition for transform */
-  border-radius: 10px; /* Rounded corners for buttons */
+  background-color: #fff;
+  padding: 0.375em .75em;
+  position: relative;
+  margin-left: .0625em;
+  box-shadow: 0 0 0 0.0625em #b5bfd9;
+  letter-spacing: .05em;
+  color: #3e4963;
+  text-align: center;
+  transition: background-color .5s ease;
 }
 
-.tabs button:hover {
-  background-color: #3c3c3c; /* Slightly lighter grey on hover */
+/* Active tab styles for previous tabs */
+label span.active {
+  background-color: #d4edda; /* Light green background for active or previous tabs */
+  color: #155724; /* Dark green text color */
 }
 
-.tabs button.active {
-  background-color: rgb(59, 130, 246); /* Active tab color */
+label:first-child span {
+  border-radius: .375em 0 0 .375em;
+}
+
+label:last-child span {
+  border-radius: 0 .375em .375em 0;
 }
 
 .content {
@@ -167,11 +213,5 @@ header {
   padding: 10px;
   border-radius: 10px; /* Rounded corners for tab content */
   background-color: #2c2c2c; /* Dark grey for content area */
-}
-
-footer {
-  margin-top: 20px;
-  text-align: center;
-  font-size: 12px;
 }
 </style>
