@@ -54,29 +54,36 @@
 </template>
 
 <script>
+import axios from 'axios'; // Import axios to make API calls
+
 export default {
   data() {
     return {
       filters: Array(6).fill(false), // Checkboxes
       sliders: Array(6).fill(5), // Sliders initialized to 5
-      properties: [
-        { id: '1', address: 'Vlinderstraat 44, 4456 RU', info: 'Details over dit huis.', image: 'https://f.hubspotusercontent30.net/hubfs/4890439/_system/Website%20images/Woningfotografie_05.jpg' },
-        { id: '2', address: 'Ceintuurbaan 23, 7261 WO', info: 'Details over dit huis.', image: 'https://f.hubspotusercontent30.net/hubfs/4890439/_system/Website%20images/Woningfotografie_05.jpg' },
-        { id: '3', address: 'Bloemstraat 50A, 9140 BR', info: 'Details over dit huis.', image: 'https://f.hubspotusercontent30.net/hubfs/4890439/_system/Website%20images/Woningfotografie_05.jpg' },
-        { id: '4', address: 'Kamperweg 23, 8181 PE', info: 'Details over dit huis.', image: 'https://f.hubspotusercontent30.net/hubfs/4890439/_system/Website%20images/Woningfotografie_05.jpg' },
-        { id: '5', address: 'Zwanenstraat 12, 1016 VB', info: 'Details over dit huis.', image: 'https://f.hubspotusercontent30.net/hubfs/4890439/_system/Website%20images/Woningfotografie_05.jpg' },
-        { id: '6', address: 'Rozenlaan 75, 3001 NH', info: 'Details over dit huis.', image: 'https://f.hubspotusercontent30.net/hubfs/4890439/_system/Website%20images/Woningfotografie_05.jpg' }
-      ],
+      properties: [], // Initialize with an empty array for houses data
       isDeleteConfirmModalOpen: false,
       deleteIndex: null
     };
   },
   computed: {
     filteredProperties() {
-      return this.properties; // Return the properties without filtering for now
+      return this.properties; // For now, return all properties
     }
   },
+  mounted() {
+    // Fetch the houses data from the API when the component is mounted
+    this.fetchHouses();
+  },
   methods: {
+    async fetchHouses() {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/huizen');
+        this.properties = response.data; // Update properties with the data from the API
+      } catch (error) {
+        console.error('Error fetching houses:', error);
+      }
+    },
     checkAll() {
       this.filters = this.filters.map(() => true);
     },
