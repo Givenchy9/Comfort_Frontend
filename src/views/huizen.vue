@@ -12,10 +12,9 @@
           :id="'filter-' + index"
           v-model="filters[index]" 
         />
-        <label :for="'filter-' + index">Checkbox {{ index + 1 }}</label>
+        <label :for="'filter-' + index">{{ checkboxLabels[index] }}</label>
       </div>
 
-      <!-- Add sliders below checkboxes -->
       <div v-for="(slider, index) in sliders" :key="index">
         <label :for="'slider-' + index">Slider {{ index + 1 }} (Value: {{ sliders[index] }})</label>
         <input 
@@ -30,10 +29,19 @@
     <main class="properties-grid">
       <div v-for="(property, index) in filteredProperties" :key="index" class="property-card" @click="goToPropertyDetail(property.id)">
         <div class="property-image">
-          <img :src="property.image" alt="Property Image" />
+          <img :src="property.image || defaultImage" alt="Property Image" />
         </div>
-        <h3>{{ property.address }}</h3>
-        <p>{{ property.info }}</p>
+        <h3 class="property-title">{{ property.address }}</h3>
+        <div class="property-details">
+          <div class="detail-row">
+            <p class="property-detail"><strong>Straatnaam:</strong> {{ property.straatnaam }}</p>
+            <p class="property-detail"><strong>Postcode:</strong> {{ property.postcode }}</p>
+          </div>
+          <div class="detail-row">
+            <p class="property-detail"><strong>Oppervlakte Huis:</strong> {{ property.oppervlakte_huis }} m²</p>
+            <p class="property-detail"><strong>Oppervlakte Tuin:</strong> {{ property.oppervlakte_tuin }} m²</p>
+          </div>
+        </div>
         <div class="property-actions">
           <button @click.stop="openDeleteConfirmModal(index)">🗑️</button>
         </div>
@@ -59,16 +67,31 @@ import axios from 'axios'; // Import axios to make API calls
 export default {
   data() {
     return {
-      filters: Array(6).fill(false), // Checkboxes
-      sliders: Array(6).fill(5), // Sliders initialized to 5
+      filters: Array(4).fill(false), // Checkboxes for zwembad, garage, tuin, zonnepanelen
+      sliders: Array(3).fill(1), // Sliders initialized to 5
       properties: [], // Initialize with an empty array for houses data
       isDeleteConfirmModalOpen: false,
-      deleteIndex: null
+      deleteIndex: null,
+      defaultImage: 'https://via.placeholder.com/150', // Replace with your stock image URL
+      checkboxLabels: [
+        'Zwembad', 
+        'Garage', 
+        'Tuin', 
+        'Zonnepanelen'
+      ]
     };
   },
   computed: {
     filteredProperties() {
-      return this.properties; // For now, return all properties
+      // Filter properties based on the selected features
+      return this.properties.filter(property => {
+        const hasZwembad = this.filters[0] ? property.zwembad === "ja" : true;
+        const hasGarage = this.filters[1] ? property.garage === "ja" : true;
+        const hasTuin = this.filters[2] ? property.tuin === "ja" : true;
+        const hasZonnepanelen = this.filters[3] ? property.zonnepanelen === "ja" : true;
+
+        return hasZwembad && hasGarage && hasTuin && hasZonnepanelen;
+      });
     }
   },
   mounted() {
@@ -128,12 +151,13 @@ export default {
 .property-card {
   border: 1px solid rgb(59 130 246 / 0.5);
   border-radius: 8px;
-  padding: 6px;
+  padding: 16px; /* Increased padding for better spacing */
   width: 550px; /* Fixed width */
-  height: 350px; /* Fixed height */
+  height: auto; /* Changed to auto to accommodate content */
   cursor: pointer;
   position: relative;
   transition: transform 0.3s ease;
+  background-color: #fff; /* Set a white background for better readability */
 }
 
 .property-card:hover {
@@ -145,6 +169,30 @@ export default {
   height: 200px;
   object-fit: cover;
   border-radius: 8px;
+}
+
+.property-title {
+  font-size: 1.5em; /* Title size */
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.property-details {
+  margin-top: 8px; /* Space between title and details */
+}
+
+.detail-row {
+  display: flex; /* Flexbox for row layout */
+  justify-content: space-between; /* Space items evenly */
+  margin-bottom: 8px; /* Space between rows */
+}
+
+.property-detail {
+  color: #333; /* Darker text for better readability */
+}
+
+.property-detail strong {
+  color: rgb(59, 130, 246); /* Accent color for labels */
 }
 
 .property-actions {
