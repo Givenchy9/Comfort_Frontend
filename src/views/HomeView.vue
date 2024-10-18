@@ -2,6 +2,7 @@
   <div class="home-view">
     <!-- Dark mode component -->
     <Darkmode />
+    <Header />
 
     <!-- Logout button -->
     <button @click="handleLogout" class="logout-button">Logout</button>
@@ -50,6 +51,8 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { AuthService } from '../services/authService';
 import Darkmode from '@/components/Darkmode.vue';
+import Header from '@/components/Header.vue';
+
 
 // LocalStorage key for news items
 const LOCAL_STORAGE_KEY = 'newsItems';

@@ -14,6 +14,17 @@
         />
         <label :for="'filter-' + index">Checkbox {{ index + 1 }}</label>
       </div>
+
+      <!-- Add sliders below checkboxes -->
+      <div v-for="(slider, index) in sliders" :key="index">
+        <label :for="'slider-' + index">Slider {{ index + 1 }} (Value: {{ sliders[index] }})</label>
+        <input 
+          type="range" 
+          :id="'slider-' + index" 
+          v-model="sliders[index]" 
+          min="1" max="10"
+        />
+      </div>
     </aside>
 
     <main class="properties-grid">
@@ -46,7 +57,8 @@
 export default {
   data() {
     return {
-      filters: Array(6).fill(false),
+      filters: Array(6).fill(false), // Checkboxes
+      sliders: Array(6).fill(5), // Sliders initialized to 5
       properties: [
         { id: '1', address: 'Vlinderstraat 44, 4456 RU', info: 'Details over dit huis.', image: 'https://f.hubspotusercontent30.net/hubfs/4890439/_system/Website%20images/Woningfotografie_05.jpg' },
         { id: '2', address: 'Ceintuurbaan 23, 7261 WO', info: 'Details over dit huis.', image: 'https://f.hubspotusercontent30.net/hubfs/4890439/_system/Website%20images/Woningfotografie_05.jpg' },
@@ -94,31 +106,46 @@ export default {
 .property-page {
   display: flex;
 }
+
 .filters {
-  width: 20%;
+  width: 30%;
 }
+
 .properties-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr); /* 2 columns layout */
   gap: 16px;
   flex-grow: 1;
 }
+
 .property-card {
-  border: 1px solid #ccc;
+  border: 1px solid rgb(59 130 246 / 0.5);
   border-radius: 8px;
-  padding: 16px;
+  padding: 6px;
+  width: 550px; /* Fixed width */
+  height: 350px; /* Fixed height */
   cursor: pointer;
   position: relative;
+  transition: transform 0.3s ease;
 }
+
+.property-card:hover {
+  transform: scale(1.05);
+}
+
 .property-image img {
-  width: 100%;
-  height: auto;
+  width: 100%; /* Ensure the image fills the card width */
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
 }
+
 .property-actions {
   position: absolute;
   bottom: 8px;
   right: 8px;
 }
+
 .modal {
   position: fixed;
   top: 0;
@@ -130,11 +157,13 @@ export default {
   align-items: center;
   justify-content: center;
 }
+
 .modal-content {
   background: white;
   padding: 20px;
   border-radius: 8px;
 }
+
 .modal-actions {
   display: flex;
   justify-content: space-between;
