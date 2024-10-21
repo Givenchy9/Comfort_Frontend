@@ -43,6 +43,7 @@
     <button @click="toggleEditorMode" :class="['editor-button', { 'editor-active': isEditing }]">
       {{ isEditing ? 'Exit Editor Mode' : 'Enter Editor Mode' }}
     </button>
+    <button @click="handleLogout">Logout</button>
   </div>
 </template>
 
@@ -50,6 +51,8 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { AuthService } from '../services/authService';
+import { useRouter } from 'vue-router'; // Import useRouter for routing
+import { AuthService } from '../services/authService'; // Import your AuthService
 import Darkmode from '@/components/Darkmode.vue';
 import Header from '@/components/Header.vue';
 
@@ -126,6 +129,19 @@ const handleLogout = async () => {
     router.push('/register_validation');
   } catch (error) {
     console.error('Error during logout:', error);
+  // Show confirmation dialog
+  const confirmLogout = confirm("Are you sure you want to logout?");
+
+  if (confirmLogout) {
+    // Remove token from localStorage
+    localStorage.removeItem('token'); // Make sure 'token' is the key you used for storing the token
+    try {
+      await AuthService.logout(); // Call the logout function
+      // Redirect to the login page or clear user state
+      router.push('/Login'); // Adjust the route as necessary
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
   }
 };
 </script>

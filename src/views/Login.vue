@@ -1,234 +1,91 @@
-<!-- <template>
-  <div class="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form class="space-y-6" action="#" method="POST" @submit.prevent="save" id="check-register-form">
-        <div>
-          <label for="name" class="block text-sm font-medium leading-6 text-gray-900">Name</label>
-          <div class="mt-2">
-            <input id="name" v-model="employee.name" name="name" type="text" required="" maxlength="20"
-              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-          </div>
-        </div>
-
-        <div>
-          <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email address</label>
-          <div class="mt-2">
-            <input id="email" v-model="employee.address" name="email" type="email" autocomplete="email" required=""
-              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-          </div>
-        </div>
-
-        <div>
-          <div class="flex items-center justify-between">
-            <label for="password" class="block text-sm font-medium leading-6 text-gray-900">Password</label>
-            <div class="text-sm">
-              <a href="#" class="font-semibold text-indigo-600 hover:text-indigo-500">Forgot password?</a>
-            </div>
-          </div>
-          <div class="mt-2">
-            <input id="password" v-model="employee.password" name="password" type="password"
-              autocomplete="current-password" required=""
-              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-          </div>
-        </div>
-
-        <div>
-          <button type="submit"
-            class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign
-            in</button>
-        </div>
-      </form>
-      <p>Make account</p>
-    </div>
-  </div>
-</template>
-
-<script lang="ts">
-import Employee from '@/components/Employee.vue'
-
-import axios from "axios";
-
-export default {
-  name: "Employee",
-  data() {
-    return {
-      result: [],
-      employee: {
-        id: "",
-        name: "",
-        address: "",
-        phone: "",
-      },
-    };
-  },
-  created() {
-    this.EmployeeLoad();
-  },
-  methods: {
-    EmployeeLoad() {
-      console.log("Fetching employees...");
-      axios
-        .get("http://127.0.0.1:8000/api/employee")
-        .then(({ data }) => {
-          console.log("Employees loaded:", data);
-          this.result = data;
-        })
-        .catch((error) => {
-          console.error("Error loading employees:", error);
-        });
-    },
-    save() {
-      console.log("Save button clicked", this.employee);
-      if (!this.employee.id) {
-        this.saveData();
-      } else {
-        this.updateData();
-      }
-    },
-    saveData() {
-      console.log("Saving new employee...", this.employee);
-      axios
-        .post("http://127.0.0.1:8000/api/employee", this.employee)
-        .then(({ data }) => {
-          console.log("Employee saved:", data);
-          this.EmployeeLoad();
-          this.resetForm();
-        })
-        .catch((error) => {
-          console.error("Error saving employee:", error);
-        });
-    },
-    edit(employee) {
-      console.log("Editing employee:", employee);
-      this.employee = { ...employee }; // Copy the employee object to avoid direct binding
-    },
-    updateData() {
-      console.log("Updating employee:", this.employee);
-      axios
-        .put(`http://127.0.0.1:8000/api/employee/${this.employee.id}`, this.employee)
-        .then(({ data }) => {
-          console.log("Employee updated:", data);
-          this.EmployeeLoad();
-          this.resetForm();
-          alert("Updated!");
-        })
-        .catch((error) => {
-          console.error("Error updating employee:", error);
-        });
-    },
-    remove(employee) {
-      console.log("Deleting employee:", employee);
-      axios
-        .delete(`http://127.0.0.1:8000/api/employee/${employee.id}`)
-        .then(() => {
-          console.log("Employee deleted");
-          this.EmployeeLoad();
-          alert("Deleted");
-        })
-        .catch((error) => {
-          console.error("Error deleting employee:", error);
-        });
-    },
-    resetForm() {
-      this.employee = {
-        id: "",
-        name: "",
-        address: "",
-        phone: "",
-      };
-    },
-  },
-};
-</script>
-<style>
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
-}
-</style> -->
-<!-- <template>
-  <div>
-    <h1>Login</h1>
-    <form @submit.prevent="login">
-      <input type="email" v-model="email" placeholder="Email" required />
-      <input type="password" v-model="password" placeholder="Password" required />
-      <button type="submit">Login</button>
-    </form>
-    <p v-if="error">{{ error }}</p>
-  </div>
-</template>
-
-<script>
-import { AuthService } from '../services/authService';
-import router from '../router'; // Import your router if using vue-router
-
-export default {
-  data() {
-    return {
-      email: '',
-      password: '',
-      error: '',
-    };
-  },
-  methods: {
-    async login() {
-      try {
-        const response = await AuthService.login({ email: this.email, password: this.password });
-        console.log('Login successful', response);
-
-        // Handle successful login (e.g., store token, redirect to dashboard, etc.)
-        localStorage.setItem('authToken', response.data.token); // Save token if returned in the response
-        router.push('/dashboard'); // Redirect to a dashboard or home page after login
-      } catch (err) {
-        this.error = err.response?.data?.message || 'Login failed';
-      }
-    },
-  },
-};
-</script> -->
 <template>
   <div>
-    <h1>Login</h1>
-    <form @submit.prevent="login">
-      <input type="email" v-model="email" placeholder="Email" required />
-      <input type="password" v-model="password" placeholder="Password" required />
-      <button type="submit">Login</button>
-    </form>
-    <p v-if="error">{{ error }}</p>
+    <form @submit.prevent="login" class="w-1/3 m-auto grid grid-rows-2 gap-8">
+      <p class="text-center font-bold text-2xl">Sign in to your account</p>
+      <div>
+        <label class="font-bold">Email Address</label>
+        <input type="email" v-model="email" placeholder="Email"
+          class="block w-full m-auto rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+          required />
+      </div>
+      <div>
+        <label class="font-bold">Wachtwoord</label>
+        <RouterLink to="" class="font-bold float-right hover:text-blue-600 hover:underline">
+          Wachtwoord vergeten? (link)
+        </RouterLink>
+        <input type="password" v-model="password" placeholder="Password"
+          class="block w-full m-auto rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+          required />
+      </div>
+      <button type="submit"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+        Login
+      </button>
 
-    <!-- Logout button -->
-    <button @click="handleLogout">Logout</button>
+      <!-- Removed 'to' attribute and used @click.prevent to manually trigger navigation -->
+      <RouterLink to="/register" class="font-bold float-right text-center hover:text-blue-600 hover:underline">
+        Account maken? klik hier
+      </RouterLink>
+
+      <div v-if="error"
+        class="grid grid-cols-10 p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+        role="alert">
+        <i class="col-span-1 pt-1 fa-solid fa-triangle-exclamation"> |</i>
+        <p class="col-span-9">{{ error }}</p>
+      </div>
+    </form>
+
+    <!-- <button @click="handleLogout">Logout</button> -->
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref } from 'vue';
 import { AuthService } from '../services/authService';
-import router from '../router'; // Import your router if using vue-router
+import { useRouter } from 'vue-router';
 
-export default {
-  data() {
-    return {
-      email: '',
-      password: '',
-      error: '',
-    };
-  },
-  methods: {
-    async login() {
-      try {
-        const response = await AuthService.login({ email: this.email, password: this.password });
-        console.log('Login successful', response);
+const email = ref('');
+const password = ref('');
+const error = ref('');
 
-        // Store token in localStorage
-        localStorage.setItem('authToken', response.data.token);
-        router.push('/'); // Redirect to a dashboard or home page after login
-      } catch (err) {
-        this.error = err.response?.data?.message || 'Login failed';
-      }
-    },
-  },
+const router = useRouter();
+
+const login = async () => {
+  error.value = ''; // Clear any previous errors
+  try {
+    const response = await AuthService.login({
+      email: email.value,
+      password: password.value,
+    });
+    console.log('Login successful', response);
+
+    // Store token in localStorage (make sure this is the correct key)
+    localStorage.setItem('token', response.data.token);
+    router.push('/'); // Redirect to a dashboard or home page after login
+  } catch (err) {
+    console.error('Login error:', err); // Log error for debugging
+    error.value =
+      err.response?.data?.message || 'Uw email komt niet overeen met het gekozen wachtwoord'; // Set error message for display
+  }
+};
+
+const handleLogout = () => {
+  localStorage.removeItem('token'); // Remove token from localStorage on logout
+  router.push('/Login'); // Redirect to login page after logout
+};
+
+// Updated register function for conditional navigation
+const register = () => {
+  const result = confirm(
+    "Wilt u doorgaan met het maken van een account? Als u op 'Annuleren' klikt, blijft u op de huidige pagina."
+  );
+
+  if (result) {
+    // User clicked OK, navigate to the registration page
+    router.push('/register_validation');
+  } else {
+    // User clicked Cancel, stay on the current page
+    console.log('User chose to stay on the current page');
+  }
 };
 </script>
