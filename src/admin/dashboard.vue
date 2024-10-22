@@ -1,3 +1,4 @@
+@ -1,79 +0,0 @@
 <script setup>
 import { ref } from 'vue';
 import Header from "@/admin/components/Header.vue";
