@@ -51,8 +51,6 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { AuthService } from '../services/authService';
-import { useRouter } from 'vue-router'; // Import useRouter for routing
-import { AuthService } from '../services/authService'; // Import your AuthService
 import Darkmode from '@/components/Darkmode.vue';
 import Header from '@/components/Header.vue';
 
@@ -124,19 +122,15 @@ const search = () => {
 
 // Logout function
 const handleLogout = async () => {
-  try {
-    await AuthService.logout();
-    router.push('/register_validation');
-  } catch (error) {
-    console.error('Error during logout:', error);
   // Show confirmation dialog
   const confirmLogout = confirm("Are you sure you want to logout?");
-
+  
   if (confirmLogout) {
-    // Remove token from localStorage
-    localStorage.removeItem('token'); // Make sure 'token' is the key you used for storing the token
     try {
-      await AuthService.logout(); // Call the logout function
+      // Remove token from localStorage
+      localStorage.removeItem('token'); // Make sure 'token' is the key you used for storing the token
+      // Call the logout function
+      await AuthService.logout();
       // Redirect to the login page or clear user state
       router.push('/Login'); // Adjust the route as necessary
     } catch (error) {
@@ -144,6 +138,8 @@ const handleLogout = async () => {
     }
   }
 };
+
+
 </script>
 
 <style scoped>

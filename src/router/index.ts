@@ -1,10 +1,7 @@
-
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import PropertyDetail from "../views/PropertyDetail.vue";
 import Header from '../components/Header.vue';
-import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '../views/HomeView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,58 +9,47 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      components: {
+      components: {  // Using 'components' for named views
         default: HomeView,
-        header: Header
+        header: Header,
       }
-      component: HomeView,
     },
     {
       path: '/Login',
       name: 'Login',
-      components: {
+      components: {  // Using 'components' for named views
         default: () => import('../views/Login.vue'),
-        header: Header
+        header: Header,
       }
-      component: () => import('../views/Login.vue'),
     },
     {
       path: '/register',
       name: 'register1',
-      components: {
+      components: {  // Using 'components' for named views
         default: () => import('../views/register1.vue'),
-        header: Header
+        header: Header,
       }
     },
     {
       path: '/register_validation',
       name: 'register2',
-      components: {
+      components: {  // Using 'components' for named views
         default: () => import('../views/register2.vue'),
-        header: Header
+        header: Header,
       }
     },
     {
       path: '/huizen',
       name: 'Huizen',
-      component: () => import('@/views/Huizen.vue')
+      component: () => import('@/views/Huizen.vue')  // Single component, no named views, so 'component' is correct
     },
     {
       path: '/property/:id', // New route for property details
       name: 'PropertyDetail',
-      component: PropertyDetail, // Link to the PropertyDetail component
+      component: PropertyDetail, // Single component, no named views, so 'component' is correct
       props: true, // Pass parameters as props
     },
   ]
-      component: () => import('../views/register1.vue'),
-    },
-    // {
-    //   path: '/register_validation',
-    //   name: 'register2',
-    //   component: () => import('../views/register2.vue'),
-    //   meta: { requiresAuth: true },
-    // },
-  ],
 });
 
 router.beforeEach((to, from, next) => {
