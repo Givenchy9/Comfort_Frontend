@@ -1,10 +1,5 @@
-
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
 import PropertyDetail from "../views/PropertyDetail.vue";
-import Header from '../components/Header.vue';
-import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '../views/HomeView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,36 +7,27 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      components: {
-        default: HomeView,
-        header: Header
-      }
-      component: HomeView,
+      component: () => import('../views/HomeView.vue'),
     },
     {
       path: '/Login',
       name: 'Login',
-      components: {
-        default: () => import('../views/Login.vue'),
-        header: Header
-      }
       component: () => import('../views/Login.vue'),
+      // components: {
+      //   default: () => import('../views/Login.vue'),
+      //   header: Header
+      // }
     },
     {
       path: '/register',
       name: 'register1',
-      components: {
-        default: () => import('../views/register1.vue'),
-        header: Header
-      }
+      component: () => import('../views/register1.vue'),
     },
     {
       path: '/register_validation',
       name: 'register2',
-      components: {
-        default: () => import('../views/register2.vue'),
-        header: Header
-      }
+      component: () => import('../views/register2.vue'),
+      // meta: { requiresAuth: true },
     },
     {
       path: '/huizen',
@@ -55,15 +41,6 @@ const router = createRouter({
       props: true, // Pass parameters as props
     },
   ]
-      component: () => import('../views/register1.vue'),
-    },
-    // {
-    //   path: '/register_validation',
-    //   name: 'register2',
-    //   component: () => import('../views/register2.vue'),
-    //   meta: { requiresAuth: true },
-    // },
-  ],
 });
 
 router.beforeEach((to, from, next) => {

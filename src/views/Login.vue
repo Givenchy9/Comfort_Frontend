@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-40">
     <form @submit.prevent="login" class="w-1/3 m-auto grid grid-rows-2 gap-8">
       <p class="text-center font-bold text-2xl">Sign in to your account</p>
       <div>
