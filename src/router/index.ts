@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import PropertyDetail from "../views/PropertyDetail.vue";
+import Header from '../components/Header.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,41 +8,44 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('../views/HomeView.vue'),
-      // components: {
-      //   default: HomeView,
-      //   header: Header
-      // }
+      components: {  // Using 'components' for named views
+        default: HomeView,
+        header: Header,
+      }
     },
     {
       path: '/Login',
       name: 'Login',
-      component: () => import('../views/Login.vue'),
-      // components: {
-      //   default: () => import('../views/Login.vue'),
-      //   header: Header
-      // }
+      components: {  // Using 'components' for named views
+        default: () => import('../views/Login.vue'),
+        header: Header,
+      }
     },
     {
       path: '/register',
       name: 'register1',
-      component: () => import('../views/register1.vue'),
+      components: {  // Using 'components' for named views
+        default: () => import('../views/register1.vue'),
+        header: Header,
+      }
     },
     {
       path: '/register_validation',
       name: 'register2',
-      component: () => import('../views/register2.vue'),
-      // meta: { requiresAuth: true },
+      components: {  // Using 'components' for named views
+        default: () => import('../views/register2.vue'),
+        header: Header,
+      }
     },
     {
       path: '/huizen',
       name: 'Huizen',
-      component: () => import('@/views/Huizen.vue')
+      component: () => import('@/views/Huizen.vue')  // Single component, no named views, so 'component' is correct
     },
     {
       path: '/property/:id', // New route for property details
       name: 'PropertyDetail',
-      component: PropertyDetail, // Link to the PropertyDetail component
+      component: PropertyDetail, // Single component, no named views, so 'component' is correct
       props: true, // Pass parameters as props
     },
   ]

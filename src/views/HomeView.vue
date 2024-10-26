@@ -46,6 +46,8 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { AuthService } from '../services/authService';
+import Darkmode from '@/components/Darkmode.vue';
+import Header from '@/components/Header.vue';
 
 
 // LocalStorage key for news items
@@ -116,16 +118,16 @@ const search = () => {
 // Logout function
 const handleLogout = async () => {
   // Show confirmation dialog
-  const confirmLogout = window.confirm("Are you sure you want to logout?");
+  const confirmLogout = confirm("Are you sure you want to logout?");
 
   if (confirmLogout) {
-    // If user confirms, proceed with logout
     try {
-      await AuthService.logout(); // Call the logout function
       // Remove token from localStorage
-      localStorage.removeItem('token');
-      // Redirect to the login page or any appropriate page
-      router.push('/login');
+      localStorage.removeItem('token'); // Make sure 'token' is the key you used for storing the token
+      // Call the logout function
+      await AuthService.logout();
+      // Redirect to the login page or clear user state
+      router.push('/Login'); // Adjust the route as necessary
     } catch (error) {
       console.error('Error during logout:', error);
     }
@@ -134,6 +136,8 @@ const handleLogout = async () => {
     console.log('User cancelled logout');
   }
 };
+
+
 </script>
 
 <style scoped>
