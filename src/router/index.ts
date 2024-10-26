@@ -9,7 +9,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       components: {  // Using 'components' for named views
-        default: HomeView,
+        default: () => import('../views/HomeView.vue'),
         header: Header,
       }
     },
