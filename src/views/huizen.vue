@@ -1,53 +1,45 @@
 <template>
-  <div class="property-page">
-    <aside class="filters">
-      <div class="results-count">
+  <div class="flex p-5 bg-white text-white property-page">
+    <aside class="w-1/4 h-1/2 bg-gray-700 rounded-lg p-4 mr-4 filters">
+      <div class="results-count mb-4 text-lg">
         Aantal resultaten: {{ filteredProperties.length }}
       </div>
-      
-      <div class="filter-controls">
-        <button class="small-button" @click="checkAll">Check All</button>
-        <button class="small-button" @click="uncheckAll">Uncheck All</button>
+
+      <div v-if="errorMessage" class="error-message mb-4 text-red-400">
+        {{ errorMessage }}
       </div>
 
-      <div v-for="(filter, index) in filters" :key="index" class="filter-item">
-        <div class="checkbox-wrapper-51">
-          <input 
-            :id="'filter-' + index" 
-            type="checkbox" 
-            v-model="filters[index]" 
-          />
-          <label class="toggle" :for="'filter-' + index">
-            <span>
-              <svg viewBox="0 0 10 10" height="10px" width="10px">
-                <path d="M5,1 L5,1 C2.790861,1 1,2.790861 1,5 L1,5 C1,7.209139 2.790861,9 5,9 L5,9 C7.209139,9 9,7.209139 9,5 L9,5 C9,2.790861 7.209139,1 5,1 L5,9 L5,1 Z"></path>
-              </svg>
-            </span>
+      <div class="filter-controls flex justify-between mb-4">
+        <button class="small-button bg-blue-500 text-white py-1 px-3 rounded" @click="checkAll">Check All</button>
+        <button class="small-button bg-red-500 text-white py-1 px-3 rounded" @click="uncheckAll">Uncheck All</button>
+      </div>
+
+      <div v-for="(filter, index) in filters" :key="index" class="filter-item mb-4">
+        <div class="flex items-center">
+          <input :id="'filter-' + index" type="checkbox" v-model="filters[index]" class="hidden" />
+          <label :for="'filter-' + index" class="toggle relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" :id="'filter-' + index" v-model="filters[index]" class="hidden" />
+            <span class="slider rounded"></span>
           </label>
-          <label :for="'filter-' + index">{{ checkboxLabels[index] }}</label>
+          <label :for="'filter-' + index" class="ml-2">{{ checkboxLabels[index] }}</label>
         </div>
       </div>
 
-      <div v-for="(slider, index) in sliders" :key="index" class="slider-item">
+      <div v-for="(slider, index) in sliders" :key="index" class="slider-item mb-4">
         <label :for="'slider-' + index">Slider {{ index + 1 }} (Value: {{ sliders[index] }})</label>
-        <input 
-          type="range" 
-          :id="'slider-' + index" 
-          v-model="sliders[index]" 
-          min="1" max="10"
-          class="slider"
-        />
+        <input type="range" :id="'slider-' + index" v-model="sliders[index]" min="1" max="10" class="slider w-full" />
       </div>
     </aside>
 
-    <main class="properties-grid">
-      <div v-for="(property, index) in filteredProperties" :key="index" class="property-card" @click="goToPropertyDetail(property.id)">
-        <div class="property-image">
-          <img :src="property.image || defaultImage" alt="Property Image" />
+    <main class="properties-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-3/4">
+      <div v-for="(property, index) in filteredProperties" :key="index"
+        class="property-card bg-gray-600 rounded-lg p-4 cursor-pointer" @click="goToPropertyDetail(property.id)">
+        <div class="property-image mb-2">
+          <img :src="property.image || defaultImage" alt="Property Image" class="w-full rounded-lg" />
         </div>
-        <h3 class="property-title">{{ property.address }}</h3>
-        <div class="property-details">
-          <div class="detail-row">
+        <h3 class="property-title text-lg font-bold">{{ property.address }}</h3>
+        <div class="property-details text-sm">
+          <div class="detail-row mb-1">
             <p class="property-detail"><strong>Straatnaam:</strong> {{ property.straatnaam }}</p>
             <p class="property-detail"><strong>Postcode:</strong> {{ property.postcode }}</p>
             <p class="property-detail"><strong>Prijs:</strong> € {{ property.prijs }}</p>
@@ -57,341 +49,162 @@
             <p class="property-detail"><strong>Oppervlakte Tuin:</strong> {{ property.oppervlakte_tuin }} m²</p>
           </div>
         </div>
-        <div class="property-actions">
-          <button @click.stop="openDeleteConfirmModal(index)" class="delete-button">🗑️</button>
+        <div class="property-actions text-right">
+          <button @click.stop="openDeleteConfirmModal(index)" class="delete-button text-red-500">🗑️</button>
         </div>
       </div>
     </main>
 
-    <div v-if="isDeleteConfirmModalOpen" class="modal">
-      <div class="modal-content">
+    <div v-if="isDeleteConfirmModalOpen"
+      class="modal fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-70">
+      <div class="modal-content bg-white p-4 rounded-lg text-center">
         <h3>Weet je zeker dat je deze woning wilt verwijderen?</h3>
         <p>{{ properties[deleteIndex]?.address }}</p>
-        <div class="modal-actions">
-          <button @click="confirmDelete" class="confirm-button">Verwijder</button>
-          <button @click="closeDeleteConfirmModal" class="cancel-button">Annuleer</button>
+        <div class="modal-actions mt-4">
+          <button @click="confirmDelete"
+            class="confirm-button bg-green-500 text-white py-1 px-4 rounded">Verwijder</button>
+          <button @click="closeDeleteConfirmModal"
+            class="cancel-button bg-red-500 text-white py-1 px-4 rounded">Annuleer</button>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 
-export default {
-  data() {
-    return {
-      filters: Array(4).fill(false),
-      sliders: Array(3).fill(1),
-      properties: [],
-      isDeleteConfirmModalOpen: false,
-      deleteIndex: null,
-      defaultImage: 'https://via.placeholder.com/150',
-      checkboxLabels: [
-        'Zwembad', 
-        'Garage', 
-        'Tuin', 
-        'Zonnepanelen'
-      ]
-    };
-  },
-  computed: {
-    filteredProperties() {
-      return this.properties.filter(property => {
-        const hasZwembad = this.filters[0] ? property.zwembad === "ja" : true;
-        const hasGarage = this.filters[1] ? property.garage === "ja" : true;
-        const hasTuin = this.filters[2] ? property.tuin === "ja" : true;
-        const hasZonnepanelen = this.filters[3] ? property.zonnepanelen === "ja" : true;
+const filters = ref(Array(4).fill(false));
+const sliders = ref(Array(3).fill(1));
+const properties = ref([]);
+const isDeleteConfirmModalOpen = ref(false);
+const deleteIndex = ref(null);
+const defaultImage = 'https://via.placeholder.com/150';
+const checkboxLabels = ['Zwembad', 'Garage', 'Tuin', 'Zonnepanelen'];
+const errorMessage = ref(null);
 
-        return hasZwembad && hasGarage && hasTuin && hasZonnepanelen;
-      });
-    }
-  },
-  mounted() {
-    this.fetchHouses();
-  },
-  methods: {
-    async fetchHouses() {
-      try {
-        const response = await axios.get('http://127.0.0.1:8000/api/huizen');
-        this.properties = response.data;
-      } catch (error) {
-        console.error('Error fetching houses:', error);
-      }
-    },
-    checkAll() {
-      this.filters = this.filters.map(() => true);
-    },
-    uncheckAll() {
-      this.filters = this.filters.map(() => false);
-    },
-    goToPropertyDetail(id) {
-      this.$router.push({ name: 'PropertyDetail', params: { id } });
-    },
-    openDeleteConfirmModal(index) {
-      this.isDeleteConfirmModalOpen = true;
-      this.deleteIndex = index;
-    },
-    closeDeleteConfirmModal() {
-      this.isDeleteConfirmModalOpen = false;
-      this.deleteIndex = null;
-    },
-    confirmDelete() {
-      this.properties.splice(this.deleteIndex, 1);
-      this.closeDeleteConfirmModal();
-    }
+// Computed property for filtered properties
+const filteredProperties = computed(() => {
+  return properties.value.filter(property => {
+    const hasZwembad = filters.value[0] ? property.zwembad === "ja" : true;
+    const hasGarage = filters.value[1] ? property.garage === "ja" : true;
+    const hasTuin = filters.value[2] ? property.tuin === "ja" : true;
+    const hasZonnepanelen = filters.value[3] ? property.zonnepanelen === "ja" : true;
+
+    return hasZwembad && hasGarage && hasTuin && hasZonnepanelen;
+  });
+});
+
+// Fetch houses on component mount
+onMounted(() => {
+  fetchHouses();
+});
+
+// Fetch houses from API
+async function fetchHouses() {
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/huizen');
+    properties.value = response.data;
+    errorMessage.value = null; // Clear any previous error messages
+  } catch (error) {
+    console.error('Error fetching houses:', error.response ? error.response.data : error.message);
+    errorMessage.value = 'Er is een fout opgetreden bij het ophalen van de woningen.'; // Update the error message
   }
-};
+}
+
+// Check all filters
+function checkAll() {
+  filters.value = filters.value.map(() => true);
+}
+
+// Uncheck all filters
+function uncheckAll() {
+  filters.value = filters.value.map(() => false);
+}
+
+// Navigate to property detail
+function goToPropertyDetail(id) {
+  // Assuming you have a router setup
+  this.$router.push({ name: 'PropertyDetail', params: { id } });
+}
+
+// Open delete confirmation modal
+function openDeleteConfirmModal(index) {
+  isDeleteConfirmModalOpen.value = true;
+  deleteIndex.value = index;
+}
+
+// Close delete confirmation modal
+function closeDeleteConfirmModal() {
+  isDeleteConfirmModalOpen.value = false;
+  deleteIndex.value = null;
+}
+
+// Confirm delete action
+function confirmDelete() {
+  properties.value.splice(deleteIndex.value, 1);
+  closeDeleteConfirmModal();
+}
 </script>
 
 <style scoped>
-.property-page {
-  display: flex;
-  padding: 20px;
-  background-color: #1e1e1e;
-  color: #fff;
+.toggle {
+  display: inline-block;
+  width: 60px;
+  /* Adjusted width for the toggle */
+  height: 34px;
+  /* Adjusted height for the toggle */
 }
 
-.results-count {
-  color: #fff;
-  margin-bottom: 16px;
-  font-size: 1.2em;
-}
-
-.filters {
-  width: 25%;
-  background: #2c2c2c;
-  border-radius: 10px;
-  padding: 20px;
-  margin-right: 20px;
-}
-
-.filter-controls {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.filter-item, .slider-item {
-  margin-bottom: 16px;
-}
-
-.checkbox-wrapper-51 {
-  display: flex;
-  align-items: center;
-  padding: 1px;
-}
-
-.checkbox-wrapper-51 input[type="checkbox"] {
-  visibility: hidden;
-  display: none;
-}
-
-.checkbox-wrapper-51 .toggle {
-  position: relative;
-  display: block;
-  width: 42px;
-  height: 24px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transform: translate3d(0, 0, 0);
-}
-
-.checkbox-wrapper-51 .toggle:before {
-  content: "";
-  position: relative;
-  top: 1px;
-  left: 1px;
-  width: 40px;
-  height: 22px;
-  display: block;
-  background: #c8ccd4;
-  border-radius: 12px;
-  transition: background 0.2s ease;  
-}
-
-.checkbox-wrapper-51 .toggle span {
+.toggle .slider {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 24px;
-  height: 24px;
-  display: block;
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(154,153,153,0.75);
-  transition: all 0.2s ease;
-}
-
-.checkbox-wrapper-51 .toggle span svg {
-  margin: 7px;
-  fill: none;
-}
-
-.checkbox-wrapper-51 .toggle span svg path {
-  stroke: #c8ccd4;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 24;
-  stroke-dashoffset: 0;
-  transition: all 0.5s linear;
-}
-
-.checkbox-wrapper-51 label {
-  margin-left: 5px;
-}
-
-.checkbox-wrapper-51 input[type="checkbox"]:checked + .toggle:before {
-  background: #1175c7;
-}
-
-.checkbox-wrapper-51 input[type="checkbox"]:checked + .toggle span {
-  transform: translateX(18px);
-}
-
-.checkbox-wrapper-51 input[type="checkbox"]:checked + .toggle span path {
-  stroke: #000000;
-  stroke-dasharray: 25;
-  stroke-dashoffset: 25;
-}
-
-.slider {
-  border-radius: 10px;
-}
-
-.properties-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-  gap: 16px;
-  flex-grow: 1;
-}
-
-.property-card {
-  border: 1px solid rgba(59, 130, 246, 0.5);
-  border-radius: 10px;
-  padding: 16px; 
-  height: auto; 
   cursor: pointer;
-  position: relative;
-  transition: transform 0.3s ease, box-shadow 0.3s ease; 
-  background-color: #fff; 
-}
-
-.property-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); 
-}
-
-.property-image img {
-  width: 100%; 
-  height: 200px;
-  object-fit: cover;
-  border-radius: 10px; 
-}
-
-.property-title {
-  font-size: 1.5em; 
-  font-weight: bold;
-  margin: 10px 0;
-}
-
-.property-details {
-  margin-top: 8px; 
-}
-
-.detail-row {
-  display: flex; 
-  justify-content: space-between; 
-  margin-bottom: 8px; 
-}
-
-.property-detail {
-  color: #333; 
-}
-
-.property-detail strong {
-  color: rgb(59, 130, 246); 
-}
-
-.property-actions {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-}
-
-.modal {
-  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5); 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999; 
+  background-color: #ccc;
+  /* Default background color */
+  border-radius: 34px;
+  /* Rounded edges for the toggle */
+  transition: background-color 0.4s;
 }
 
-.modal-content {
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25); 
-  color: black;
+.toggle .slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  /* Color of the slider thumb */
+  border-radius: 50%;
+  /* Rounded thumb */
+  transition: transform 0.4s;
 }
 
-.modal-actions {
-  display: flex;
-  justify-content: space-between;
+.toggle input:checked+.slider {
+  background-color: #2196F3;
+  /* Background color when checked */
 }
 
-.small-button {
-  border: none;
-  background: rgb(59, 130, 246); 
-  color: white;
-  cursor: pointer;
-  border-radius: 10px; 
-  padding: 8px 12px; 
-  transition: background 0.3s ease; 
+.toggle input:focus+.slider {
+  box-shadow: 0 0 1px #2196F3;
+  /* Focus effect */
 }
 
-.small-button:hover {
-  background: rgba(59, 130, 246, 0.8); 
+.toggle input:checked+.slider:before {
+  transform: translateX(26px);
+  /* Move the thumb when checked */
 }
 
-.delete-button {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: rgb(255, 0, 0); 
-  font-size: 1.5em; 
+/* .toggle .dot {
+  transition: all 0.2s ease;
 }
 
-.confirm-button {
-  background: rgb(59, 130, 246); 
-  color: white;
-  border: none;
-  border-radius: 10px; 
-  padding: 8px 12px; 
-  transition: background 0.3s ease; 
-}
-
-.confirm-button:hover {
-  background: rgba(59, 130, 246, 0.8); 
-}
-
-.cancel-button {
-  background: #ccc; 
-  color: black;
-  border: none;
-  border-radius: 10px; 
-  padding: 8px 12px; 
-  transition: background 0.3s ease; 
-}
-
-.cancel-button:hover {
-  background: rgba(200, 200, 200, 0.8); 
-}
+.toggle input:checked+span .dot {
+  transform: translateX(100%);
+} */
 </style>

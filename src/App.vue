@@ -1,21 +1,27 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView, useRoute } from 'vue-router';
+import { computed } from 'vue';
+import Header from '@/components/Header.vue';
+
+const route = useRoute();
+
+// Check if the current route is either login or new-page
+const isLoginPage = computed(() => route.path === '/login');
+const isNewPage = computed(() => route.path === '/register');
+
+// Log the current route for debugging
+console.log("Current route:", route.path);
+console.log("Is Login Page:", isLoginPage.value);
+console.log("Is New Page:", isNewPage.value);
 </script>
 
 <template>
-  <header>
-    <nav>
-      <RouterLink to="/" class="text-red-500">Home</RouterLink>
-      <RouterLink to="/Login">Login</RouterLink>
-    </nav>
-  </header>
+  <!-- Only show the Header if not on the login page or the new page -->
+  <Header v-if="!isLoginPage && !isNewPage" />
   <RouterView />
 </template>
 
 <style scoped>
-/* html.dark{
-  color-scheme: dark;
-} */
 header {
   line-height: 1.5;
   max-height: 100vh;
