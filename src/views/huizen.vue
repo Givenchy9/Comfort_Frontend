@@ -73,6 +73,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import axios from 'axios';
 
 const filters = ref(Array(4).fill(false));
@@ -83,6 +84,9 @@ const deleteIndex = ref(null);
 const defaultImage = 'https://via.placeholder.com/150';
 const checkboxLabels = ['Zwembad', 'Garage', 'Tuin', 'Zonnepanelen'];
 const errorMessage = ref(null);
+
+// Use Vue Router
+const router = useRouter();
 
 // Computed property for filtered properties
 const filteredProperties = computed(() => {
@@ -125,8 +129,7 @@ function uncheckAll() {
 
 // Navigate to property detail
 function goToPropertyDetail(id) {
-  // Assuming you have a router setup
-  this.$router.push({ name: 'PropertyDetail', params: { id } });
+  router.push({ name: 'PropertyDetail', params: { id } });
 }
 
 // Open delete confirmation modal
@@ -147,6 +150,7 @@ function confirmDelete() {
   closeDeleteConfirmModal();
 }
 </script>
+
 
 <style scoped>
 .toggle {
