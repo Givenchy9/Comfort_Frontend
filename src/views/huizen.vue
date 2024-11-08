@@ -9,11 +9,13 @@
         {{ errorMessage }}
       </div>
 
+      <!-- Buttons to check/uncheck all filters -->
       <div class="filter-controls flex justify-between mb-4">
         <button class="small-button bg-blue-500 text-white py-1 px-3 rounded" @click="checkAll">Check All</button>
         <button class="small-button bg-red-500 text-white py-1 px-3 rounded" @click="uncheckAll">Uncheck All</button>
       </div>
 
+      <!-- Filter Checkboxes (Zwembad, Garage, Tuin, Zonnepanelen) -->
       <div v-for="(filter, index) in filters" :key="index" class="filter-item mb-4">
         <div class="flex items-center">
           <input :id="'filter-' + index" type="checkbox" v-model="filters[index]" class="hidden" />
@@ -25,12 +27,45 @@
         </div>
       </div>
 
-      <div v-for="(slider, index) in sliders" :key="index" class="slider-item mb-4">
-        <label :for="'slider-' + index">Slider {{ index + 1 }} (Value: {{ sliders[index] }})</label>
-        <input type="range" :id="'slider-' + index" v-model="sliders[index]" min="1" max="10" class="slider w-full" />
+      <!-- Price Range Slider -->
+      <div class="card-conteiner mb-6">
+        <div class="card-content">
+          <div class="card-title">Price <span>Range</span></div>
+          <div class="values">
+            <div>€<span id="first">{{ priceRange.min }}</span></div> - 
+            <div>€<span id="second">{{ priceRange.max }}</span></div>
+          </div>
+          <small class="current-range">
+            Current Range:
+            <div>€<span id="third">{{ priceRange.max }}</span></div>
+          </small>
+          <div class="slider">
+            <label class="label-min-value">€1</label>
+            <label class="label-max-value">€2,000,000</label>
+          </div>
+          <div class="rangeslider">
+            <input
+              class="min input-ranges"
+              type="range"
+              min="500"
+              max="2000000"
+              v-model="priceRange.min"
+              @change="handleMinPriceChange"
+            />
+            <input
+              class="max input-ranges"
+              type="range"
+              min="500"
+              max="2000000"
+              v-model="priceRange.max"
+              @change="handleMaxPriceChange"
+            />
+          </div>
+        </div>
       </div>
     </aside>
 
+    <!-- Property Cards Section -->
     <main class="properties-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-3/4">
       <div v-for="(property, index) in filteredProperties" :key="index"
         class="property-card bg-gray-600 rounded-lg p-4 cursor-pointer" @click="goToPropertyDetail(property.id)">
@@ -44,30 +79,9 @@
             <p class="property-detail"><strong>Postcode:</strong> {{ property.postcode }}</p>
             <p class="property-detail"><strong>Prijs:</strong> € {{ property.prijs }}</p>
           </div>
-          <div class="detail-row">
-            <p class="property-detail"><strong>Oppervlakte Huis:</strong> {{ property.oppervlakte_huis }} m²</p>
-            <p class="property-detail"><strong>Oppervlakte Tuin:</strong> {{ property.oppervlakte_tuin }} m²</p>
-          </div>
-        </div>
-        <div class="property-actions text-right">
-          <button @click.stop="openDeleteConfirmModal(index)" class="delete-button text-red-500">🗑️</button>
         </div>
       </div>
     </main>
-
-    <div v-if="isDeleteConfirmModalOpen"
-      class="modal fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-70">
-      <div class="modal-content bg-white p-4 rounded-lg text-center">
-        <h3>Weet je zeker dat je deze woning wilt verwijderen?</h3>
-        <p>{{ properties[deleteIndex]?.address }}</p>
-        <div class="modal-actions mt-4">
-          <button @click="confirmDelete"
-            class="confirm-button bg-green-500 text-white py-1 px-4 rounded">Verwijder</button>
-          <button @click="closeDeleteConfirmModal"
-            class="cancel-button bg-red-500 text-white py-1 px-4 rounded">Annuleer</button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -77,13 +91,13 @@ import { useRouter } from 'vue-router';
 import axios from 'axios';
 
 const filters = ref(Array(4).fill(false));
-const sliders = ref(Array(3).fill(1));
 const properties = ref([]);
-const isDeleteConfirmModalOpen = ref(false);
-const deleteIndex = ref(null);
 const defaultImage = 'https://via.placeholder.com/150';
 const checkboxLabels = ['Zwembad', 'Garage', 'Tuin', 'Zonnepanelen'];
 const errorMessage = ref(null);
+
+// Price range slider values
+const priceRange = ref({ min: 735, max: 6465 });
 
 // Use Vue Router
 const router = useRouter();
@@ -95,70 +109,113 @@ const filteredProperties = computed(() => {
     const hasGarage = filters.value[1] ? property.garage === "ja" : true;
     const hasTuin = filters.value[2] ? property.tuin === "ja" : true;
     const hasZonnepanelen = filters.value[3] ? property.zonnepanelen === "ja" : true;
-
     return hasZwembad && hasGarage && hasTuin && hasZonnepanelen;
   });
 });
 
-// Fetch houses on component mount
 onMounted(() => {
   fetchHouses();
 });
 
-// Fetch houses from API
 async function fetchHouses() {
   try {
     const response = await axios.get('http://127.0.0.1:8000/api/huizen');
     properties.value = response.data;
-    errorMessage.value = null; // Clear any previous error messages
+    errorMessage.value = null;
   } catch (error) {
-    console.error('Error fetching houses:', error.response ? error.response.data : error.message);
-    errorMessage.value = 'Er is een fout opgetreden bij het ophalen van de woningen.'; // Update the error message
+    console.error('Error fetching houses:', error);
+    errorMessage.value = 'Er is een fout opgetreden bij het ophalen van de woningen.';
   }
 }
 
-// Check all filters
 function checkAll() {
   filters.value = filters.value.map(() => true);
 }
 
-// Uncheck all filters
 function uncheckAll() {
   filters.value = filters.value.map(() => false);
 }
 
-// Navigate to property detail
 function goToPropertyDetail(id) {
   router.push({ name: 'PropertyDetail', params: { id } });
 }
 
-// Open delete confirmation modal
-function openDeleteConfirmModal(index) {
-  isDeleteConfirmModalOpen.value = true;
-  deleteIndex.value = index;
+// Handle min price change on release
+function handleMinPriceChange() {
+  if (priceRange.value.min > priceRange.value.max) {
+    priceRange.value.min = priceRange.value.max - 1; // Adjust slightly if min exceeds max
+  }
 }
 
-// Close delete confirmation modal
-function closeDeleteConfirmModal() {
-  isDeleteConfirmModalOpen.value = false;
-  deleteIndex.value = null;
-}
-
-// Confirm delete action
-function confirmDelete() {
-  properties.value.splice(deleteIndex.value, 1);
-  closeDeleteConfirmModal();
+// Handle max price change on release
+function handleMaxPriceChange() {
+  if (priceRange.value.max < priceRange.value.min) {
+    priceRange.value.max = priceRange.value.min + 1; // Adjust slightly if max is below min
+  }
 }
 </script>
 
-
 <style scoped>
+.card-conteiner {
+  cursor: default;
+  --color-primary: #275efe;
+  --color-headline: #3f4656;
+  --color-text: #99a3ba;
+}
+
+.card-content {
+  max-width: 312px;
+  padding: 36px 32px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(18, 22, 33, 0.12);
+}
+
+.card-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--color-headline);
+}
+
+.card-content .values {
+  margin: 0;
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+.rangeslider input {
+  width: 100%;
+  height: 5px;
+  background: var(--color-headline);
+  -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.input-ranges[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: #2196F3;
+  transition: background-color 0.2s;
+}
+
+.input-ranges[type="range"]:focus::-webkit-slider-thumb {
+  background-color: #1a73e8;
+}
+
+.input-ranges[type="range"]:focus {
+  outline: none;
+}
+
+/* Styling for the toggle buttons */
 .toggle {
   display: inline-block;
   width: 60px;
-  /* Adjusted width for the toggle */
   height: 34px;
-  /* Adjusted height for the toggle */
 }
 
 .toggle .slider {
@@ -169,9 +226,7 @@ function confirmDelete() {
   right: 0;
   bottom: 0;
   background-color: #ccc;
-  /* Default background color */
   border-radius: 34px;
-  /* Rounded edges for the toggle */
   transition: background-color 0.4s;
 }
 
@@ -183,32 +238,36 @@ function confirmDelete() {
   left: 4px;
   bottom: 4px;
   background-color: white;
-  /* Color of the slider thumb */
   border-radius: 50%;
-  /* Rounded thumb */
   transition: transform 0.4s;
 }
 
-.toggle input:checked+.slider {
+.toggle input:checked + .slider {
   background-color: #2196F3;
-  /* Background color when checked */
 }
 
-.toggle input:focus+.slider {
+.toggle input:focus + .slider {
   box-shadow: 0 0 1px #2196F3;
-  /* Focus effect */
 }
 
-.toggle input:checked+.slider:before {
+.toggle input:checked + .slider:before {
   transform: translateX(26px);
-  /* Move the thumb when checked */
 }
 
-/* .toggle .dot {
-  transition: all 0.2s ease;
+.filter-controls button {
+  padding: 8px 16px;
+  border-radius: 4px;
 }
 
-.toggle input:checked+span .dot {
-  transform: translateX(100%);
-} */
+.filter-controls .small-button {
+  background-color: #275efe;
+  color: white;
+  font-size: 14px;
+}
+
+/* Blue color for current range */
+.current-range {
+  color: #275efe; /* Same blue as buttons */
+  font-weight: bold;
+}
 </style>
