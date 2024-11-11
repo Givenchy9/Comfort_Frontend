@@ -9,63 +9,49 @@
         {{ errorMessage }}
       </div>
 
-      <!-- Buttons to check/uncheck all filters -->
-      <div class="filter-controls flex justify-between mb-4">
+      <!-- Check all/uncheck all buttons -->
+      <div class="filter-controls flex gap-2 mb-4">
         <button class="small-button bg-blue-500 text-white py-1 px-3 rounded" @click="checkAll">Check All</button>
         <button class="small-button bg-red-500 text-white py-1 px-3 rounded" @click="uncheckAll">Uncheck All</button>
       </div>
 
-      <!-- Filter Checkboxes (Zwembad, Garage, Tuin, Zonnepanelen) -->
-      <div v-for="(filter, index) in filters" :key="index" class="filter-item mb-4">
-        <div class="flex items-center">
-          <input :id="'filter-' + index" type="checkbox" v-model="filters[index]" class="hidden" />
-          <label :for="'filter-' + index" class="toggle relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" :id="'filter-' + index" v-model="filters[index]" class="hidden" />
-            <span class="slider rounded"></span>
+      <!-- Toggle switches -->
+      <div class="toggle-switches mb-4">
+        <div v-for="(filter, index) in filters" :key="index" class="filter-item mb-4 flex items-center">
+          <label class="switch">
+            <input type="checkbox" v-model="filters[index]" />
+            <span class="slider"></span>
           </label>
           <label :for="'filter-' + index" class="ml-2">{{ checkboxLabels[index] }}</label>
         </div>
       </div>
 
-      <!-- Price Range Slider -->
-      <div class="card-conteiner mb-6">
+      <!-- Price slider -->
+      <div class="price-slider mb-6">
         <div class="card-content">
-          <div class="card-title">Price <span>Range</span></div>
+          <div class="card-title">Maximum Price</div>
           <div class="values">
-            <div>€<span id="first">{{ priceRange.min }}</span></div> - 
-            <div>€<span id="second">{{ priceRange.max }}</span></div>
-          </div>
-          <small class="current-range">
-            Current Range:
-            <div>€<span id="third">{{ priceRange.max }}</span></div>
-          </small>
-          <div class="slider">
-            <label class="label-min-value">€1</label>
-            <label class="label-max-value">€2,000,000</label>
+            <div>€<span id="max-price">{{ priceRange.max }}</span></div>
           </div>
           <div class="rangeslider">
             <input
-              class="min input-ranges"
-              type="range"
-              min="500"
-              max="2000000"
-              v-model="priceRange.min"
-              @change="handleMinPriceChange"
-            />
-            <input
               class="max input-ranges"
               type="range"
-              min="500"
+              min="500000"
               max="2000000"
+              step="10000"
               v-model="priceRange.max"
-              @change="handleMaxPriceChange"
+              @input="handlePriceChange"
             />
           </div>
         </div>
       </div>
+      <div>
+        
+      </div>
     </aside>
 
-    <!-- Property Cards Section -->
+    <!-- Property Cards -->
     <main class="properties-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-3/4">
       <div v-for="(property, index) in filteredProperties" :key="index"
         class="property-card bg-gray-600 rounded-lg p-4 cursor-pointer" @click="goToPropertyDetail(property.id)">
@@ -90,29 +76,19 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
-const filters = ref(Array(4).fill(false));
-const properties = ref([]);
+const filters = ref(Array(4).fill(false)); // Toggle switches state (Zwembad, Garage, Tuin, Zonnepanelen)
+const properties = ref([]); // All properties
 const defaultImage = 'https://via.placeholder.com/150';
 const checkboxLabels = ['Zwembad', 'Garage', 'Tuin', 'Zonnepanelen'];
 const errorMessage = ref(null);
 
-// Price range slider values
-const priceRange = ref({ min: 735, max: 6465 });
+// Price range values
+const priceRange = ref({ max: 500000 }); // Default to 500,000
 
-// Use Vue Router
+// Vue Router
 const router = useRouter();
 
-// Computed property for filtered properties
-const filteredProperties = computed(() => {
-  return properties.value.filter(property => {
-    const hasZwembad = filters.value[0] ? property.zwembad === "ja" : true;
-    const hasGarage = filters.value[1] ? property.garage === "ja" : true;
-    const hasTuin = filters.value[2] ? property.tuin === "ja" : true;
-    const hasZonnepanelen = filters.value[3] ? property.zonnepanelen === "ja" : true;
-    return hasZwembad && hasGarage && hasTuin && hasZonnepanelen;
-  });
-});
-
+// Fetch houses from the API
 onMounted(() => {
   fetchHouses();
 });
@@ -128,146 +104,123 @@ async function fetchHouses() {
   }
 }
 
+// Computed property to filter properties based on price and checkboxes
+const filteredProperties = computed(() => {
+  return properties.value.filter(property => {
+    // Filter based on the toggled features (filters)
+    const hasZwembad = filters.value[0] ? property.zwembad === "ja" : true;
+    const hasGarage = filters.value[1] ? property.garage === "ja" : true;
+    const hasTuin = filters.value[2] ? property.tuin === "ja" : true;
+    const hasZonnepanelen = filters.value[3] ? property.zonnepanelen === "ja" : true;
+
+    // Filter based on price
+    const isInPriceRange = property.prijs <= priceRange.value.max;
+
+    return hasZwembad && hasGarage && hasTuin && hasZonnepanelen && isInPriceRange;
+  });
+});
+
+// Check all filters
 function checkAll() {
   filters.value = filters.value.map(() => true);
 }
 
+// Uncheck all filters
 function uncheckAll() {
   filters.value = filters.value.map(() => false);
 }
 
+// Go to property detail page
 function goToPropertyDetail(id) {
   router.push({ name: 'PropertyDetail', params: { id } });
 }
 
-// Handle min price change on release
-function handleMinPriceChange() {
-  if (priceRange.value.min > priceRange.value.max) {
-    priceRange.value.min = priceRange.value.max - 1; // Adjust slightly if min exceeds max
-  }
-}
-
-// Handle max price change on release
-function handleMaxPriceChange() {
-  if (priceRange.value.max < priceRange.value.min) {
-    priceRange.value.max = priceRange.value.min + 1; // Adjust slightly if max is below min
-  }
+// Handle price slider changes
+function handlePriceChange() {
+  // You could add more logic here if needed in the future
 }
 </script>
 
 <style scoped>
-.card-conteiner {
-  cursor: default;
-  --color-primary: #275efe;
-  --color-headline: #3f4656;
-  --color-text: #99a3ba;
+/* New Toggle Switch Styles */
+.switch {
+  --button-width: 3.5em;
+  --button-height: 2em;
+  --toggle-diameter: 1.5em;
+  --button-toggle-offset: calc((var(--button-height) - var(--toggle-diameter)) / 2);
+  --toggle-shadow-offset: 10px;
+  --toggle-wider: 3em;
+  --color-grey: #cccccc;
+  --color-green: #4296f4;
 }
 
-.card-content {
-  max-width: 312px;
-  padding: 36px 32px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 1px 4px rgba(18, 22, 33, 0.12);
-}
-
-.card-title {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  color: var(--color-headline);
-}
-
-.card-content .values {
-  margin: 0;
-  font-weight: 500;
-  color: var(--color-primary);
-}
-
-.rangeslider input {
-  width: 100%;
-  height: 5px;
-  background: var(--color-headline);
-  -webkit-appearance: none;
-  outline: none;
-  cursor: pointer;
-}
-
-.input-ranges[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  background-color: #2196F3;
-  transition: background-color 0.2s;
-}
-
-.input-ranges[type="range"]:focus::-webkit-slider-thumb {
-  background-color: #1a73e8;
-}
-
-.input-ranges[type="range"]:focus {
-  outline: none;
-}
-
-/* Styling for the toggle buttons */
-.toggle {
+.slider {
   display: inline-block;
-  width: 60px;
-  height: 34px;
+  width: var(--button-width);
+  height: var(--button-height);
+  background-color: var(--color-grey);
+  border-radius: calc(var(--button-height) / 2);
+  position: relative;
+  transition: 0.3s all ease-in-out;
 }
 
-.toggle .slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  border-radius: 34px;
-  transition: background-color 0.4s;
-}
-
-.toggle .slider:before {
-  position: absolute;
+.slider::after {
   content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
+  display: inline-block;
+  width: var(--toggle-diameter);
+  height: var(--toggle-diameter);
+  background-color: #fff;
+  border-radius: calc(var(--toggle-diameter) / 2);
+  position: absolute;
+  top: var(--button-toggle-offset);
+  transform: translateX(var(--button-toggle-offset));
+  box-shadow: var(--toggle-shadow-offset) 0 calc(var(--toggle-shadow-offset) * 4) rgba(0, 0, 0, 0.1);
+  transition: 0.3s all ease-in-out;
+}
+
+.switch input[type="checkbox"]:checked + .slider {
+  background-color: var(--color-green);
+}
+
+.switch input[type="checkbox"]:checked + .slider::after {
+  transform: translateX(calc(var(--button-width) - var(--toggle-diameter) - var(--button-toggle-offset)));
+  box-shadow: calc(var(--toggle-shadow-offset) * -1) 0 calc(var(--toggle-shadow-offset) * 4) rgba(0, 0, 0, 0.1);
+}
+
+.switch input[type="checkbox"] {
+  display: none;
+}
+
+.switch input[type="checkbox"]:active + .slider::after {
+  width: var(--toggle-wider);
+}
+
+.switch input[type="checkbox"]:checked:active + .slider::after {
+  transform: translateX(calc(var(--button-width) - var(--toggle-wider) - var(--button-toggle-offset)));
+}
+
+.PB-range-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  background: #D5DBE1;
+  border-radius: 5px;
+  outline: none;
+}
+
+.PB-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background-color: #007bff;
   border-radius: 50%;
-  transition: transform 0.4s;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
 }
 
-.toggle input:checked + .slider {
-  background-color: #2196F3;
-}
-
-.toggle input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
-}
-
-.toggle input:checked + .slider:before {
-  transform: translateX(26px);
-}
-
-.filter-controls button {
-  padding: 8px 16px;
-  border-radius: 4px;
-}
-
-.filter-controls .small-button {
-  background-color: #275efe;
-  color: white;
-  font-size: 14px;
-}
-
-/* Blue color for current range */
-.current-range {
-  color: #275efe; /* Same blue as buttons */
-  font-weight: bold;
+.PB-range-slidervalue {
+  font-weight: 600;
+  text-align: center;
+  margin-top: 10px;
 }
 </style>
