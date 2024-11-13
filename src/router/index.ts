@@ -48,6 +48,14 @@ const router = createRouter({
       component: PropertyDetail, // Single component, no named views, so 'component' is correct
       props: true, // Pass parameters as props
     },
+    {
+      path: '/settings',  // The URL path for the settings page
+      name: 'Settings',    // The name of the route
+      components: {        // Using 'components' for named views
+        default: () => import('../views/settings.vue'), // Lazy-load the settings component
+        header: Header,    // You can keep the header component if it's used globally
+      }
+    }, 
   ]
 });
 
