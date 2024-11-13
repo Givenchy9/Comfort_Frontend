@@ -15,34 +15,51 @@
 
     <!-- Center Section: Search Bar (hidden on mobile) -->
     <div class="flex items-center justify-center w-full">
-      <input type="text" placeholder="Search..." class="block w-2/3 rounded-md border-0 py-1.5 px-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 hidden sm:block" />
+      <input
+        type="text"
+        placeholder="Search..."
+        class="block w-2/3 rounded-md border-0 py-1.5 px-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 hidden sm:block"
+      />
     </div>
 
-    <!-- Right Section: Darkmode and Buttons -->
+    <!-- Right Section: Darkmode, User Profile, and Buttons -->
     <div class="flex items-center justify-center lg:justify-end relative">
       <Darkmode class="mr-4 hidden sm:inline-block" />
 
+<<<<<<< Updated upstream
       <!-- Conditional Login/Logout Button -->
       <button v-if="isLoggedIn" @click="confirmLogout" class="hover:text-gray-600 mr-4">
         <p>Logout</p>
       </button>
       <button v-else @click="confirmNavigation('/login')" class="hover:text-gray-600 mr-4">
         <p>Login</p>
+=======
+      <!-- Conditional Logout or Login Button -->
+      <button v-if="isLoggedIn" @click="confirmLogout"
+        class="bg-blue-700 hover:bg-cyan-500 text-white font-bold py-1 px-4 rounded mr-2">
+        Logout
+      </button>
+      <button v-else @click="toggleLoginModal"
+        class="bg-blue-400 hover:bg-cyan-500 text-white font-bold py-1 px-4 rounded mr-2">
+        Login
+>>>>>>> Stashed changes
       </button>
 
-      <!-- Settings Button with Dropdown -->
+      <!-- User Profiling Button -->
       <button @click="toggleDropdown" class="hover:text-gray-600">
-        <i class="fa-solid fa-gear fa-xl"></i>/<i class="fa-solid fa-user fa-xl"></i>
+        <i class="fa-solid fa-user fa-xl"></i>
       </button>
 
-      <!-- Dropdown Menu (Toggle visibility based on dropdownVisible state) -->
+      <!-- Dropdown Menu for User Profile -->
       <div v-if="dropdownVisible" class="absolute top-12 right-0 bg-white shadow-lg rounded-md w-48 p-2 z-20">
         <router-link to="/profile" class="block p-2 text-gray-900 hover:bg-gray-100">Profile</router-link>
         <router-link to="/settings" class="block p-2 text-gray-900 hover:bg-gray-100">Settings</router-link>
         <button @click="confirmLogout" class="block w-full p-2 text-red-600 hover:bg-gray-100">Logout</button>
       </div>
     </div>
+  </div>
 
+<<<<<<< Updated upstream
     <!-- Mobile Menu (toggle) -->
     <div v-if="isMenuOpen" class="absolute top-12 left-0 w-full bg-blue-500 p-4 sm:hidden">
       <div class="flex flex-col space-y-2">
@@ -79,9 +96,21 @@
     <!-- Logout Success Message -->
     <div v-if="logoutMessage" class="fixed top-16 left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-3 rounded">
       {{ logoutMessage }}
+=======
+  <!-- Login Modal -->
+  <div v-if="showLoginModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded shadow-lg text-center w-80">
+      <p class="text-lg font-bold mb-4">Login to Your Account</p>
+      <input type="text" v-model="email" placeholder="Email" class="border p-2 mb-2 w-full rounded" />
+      <input type="password" v-model="password" placeholder="Password" class="border p-2 mb-4 w-full rounded" />
+      <button @click="login" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">Login</button>
+      <router-link to="/register" class="block mt-4 text-blue-600 hover:underline">Create an account</router-link>
+      <button @click="toggleLoginModal" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4">Close</button>
+>>>>>>> Stashed changes
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref, onMounted } from 'vue';
@@ -89,6 +118,7 @@ import { useRouter } from 'vue-router';
 import dropdown from '@/components/dropdown.vue';
 import Darkmode from '@/components/Darkmode.vue';
 
+<<<<<<< Updated upstream
 // State for mobile menu and dropdown visibility
 const isMenuOpen = ref(false);
 const dropdownVisible = ref(false);
@@ -162,6 +192,56 @@ const logoutConfirmed = () => {
 const cancelLogout = () => {
   showLogoutConfirm.value = false;
 };
+=======
+// State Variables
+const showLoginModal = ref(false);
+const dropdownVisible = ref(false);
+const isLoggedIn = ref(false);
+const email = ref('');
+const password = ref('');
+const loginMessage = ref('');
+const logoutMessage = ref('');
+const router = useRouter();
+
+// Check for token on component mount
+onMounted(() => {
+  isLoggedIn.value = !!localStorage.getItem('token');
+});
+
+// Toggle Dropdown Visibility
+const toggleDropdown = () => {
+  dropdownVisible.value = !dropdownVisible.value;
+};
+
+// Toggle Login Modal
+const toggleLoginModal = () => {
+  showLoginModal.value = !showLoginModal.value;
+};
+
+// Confirm Logout
+const confirmLogout = () => {
+  localStorage.removeItem('token');
+  isLoggedIn.value = false;
+  logoutMessage.value = 'Successfully logged out!';
+  setTimeout(() => (logoutMessage.value = ''), 3000);
+};
+
+// Handle User Login
+const login = async () => {
+  try {
+    const response = await AuthService.login({ email: email.value, password: password.value });
+    localStorage.setItem('token', response.data.token);
+    isLoggedIn.value = true;
+    showLoginModal.value = false;
+    loginMessage.value = 'Login Successful!';
+    setTimeout(() => (loginMessage.value = ''), 3000);
+    router.push('/');
+  } catch (error) {
+    console.error('Login failed:', error);
+  }
+};
+
+>>>>>>> Stashed changes
 </script>
 
 <style scoped>
