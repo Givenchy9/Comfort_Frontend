@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-blue-500 grid grid-cols-3 py-2 border-2 border-black items-center justify-items-center px-4">
+  <div class="bg-blue-500 grid grid-cols-3 py-2 border-2 border-black items-center justify-items-center px-4 relative">
     <!-- Left Section: Logo and Dropdown -->
     <div class="flex items-center justify-center lg:justify-start">
       <router-link to="/" class="inline-block mr-2">
@@ -13,12 +13,11 @@
 
     <!-- Center Section: Search Bar -->
     <div class="flex items-center justify-center w-full">
-      <input type="text" placeholder="Search..."
-        class="block w-2/3 rounded-md border-0 py-1.5 px-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 hidden sm:block" />
+      <input type="text" placeholder="Search..." class="block w-2/3 rounded-md border-0 py-1.5 px-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 hidden sm:block" />
     </div>
 
     <!-- Right Section: Darkmode and Buttons -->
-    <div class="flex items-center justify-center lg:justify-end">
+    <div class="flex items-center justify-center lg:justify-end relative">
       <Darkmode class="mr-4 hidden sm:inline-block" />
       <button v-if="isLoggedIn" @click="confirmLogout"
         class="bg-blue-700 hover:bg-cyan-500 text-white font-bold py-1 px-4 rounded">
@@ -28,9 +27,18 @@
         class="bg-blue-400 hover:bg-cyan-500 text-white font-bold py-1 px-4 rounded">
         <p>Login</p>
       </button>
-      <button @click="confirmNavigation('/settings')" class="hover:text-gray-600">
+
+      <!-- Settings Button with Dropdown -->
+      <button @click="toggleDropdown" class="hover:text-gray-600">
         <i class="fa-solid fa-gear fa-xl"></i>/<i class="fa-solid fa-user fa-xl"></i>
       </button>
+
+      <!-- Dropdown Menu (Toggle visibility based on dropdownVisible state) -->
+      <div v-if="dropdownVisible" class="absolute top-12 right-0 bg-white shadow-lg rounded-md w-48 p-2 z-20">
+        <router-link to="/profile" class="block p-2 text-gray-900 hover:bg-gray-100">Profile</router-link>
+        <router-link to="/settings" class="block p-2 text-gray-900 hover:bg-gray-100">Settings</router-link>
+        <button @click="confirmLogout" class="block w-full p-2 text-red-600 hover:bg-gray-100">Logout</button>
+      </div>
     </div>
 
     <!-- Login Popup Modal -->
@@ -68,35 +76,23 @@
       </div>
     </div>
 
-    <!-- Confirmation Modal for Navigation -->
+    <!-- Confirmation Modals -->
     <div v-if="showConfirm" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
       <div class="bg-white p-6 rounded shadow-lg text-center">
         <p>Are you sure you want to leave this page?</p>
         <div class="mt-4">
-          <button @click="navigateToTarget"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4">
-            Yes
-          </button>
-          <button @click="cancelNavigation"
-            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-            No
-          </button>
+          <button @click="navigateToTarget" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4">Yes</button>
+          <button @click="cancelNavigation" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">No</button>
         </div>
       </div>
     </div>
 
-    <!-- Confirmation Modal for Logout -->
     <div v-if="showLogoutConfirm" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
       <div class="bg-white p-6 rounded shadow-lg text-center">
         <p>Are you sure you want to log out?</p>
         <div class="mt-4">
-          <button @click="logoutConfirmed"
-            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-4">
-            Yes
-          </button>
-          <button @click="cancelLogout" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-            No
-          </button>
+          <button @click="logoutConfirmed" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-4">Yes</button>
+          <button @click="cancelLogout" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">No</button>
         </div>
       </div>
     </div>
@@ -203,3 +199,100 @@ const login = async () => {
   }
 };
 </script>
+
+<style scoped>
+/* Styles for the dropdown menu */
+.absolute {
+  position: absolute;
+}
+.top-12 {
+  top: 3rem;
+}
+.right-0 {
+  right: 0;
+}
+.bg-white {
+  background-color: white;
+}
+.shadow-lg {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+.rounded-md {
+  border-radius: 0.375rem;
+}
+.w-48 {
+  width: 12rem;
+}
+.p-2 {
+  padding: 0.5rem;
+}
+.text-gray-900 {
+  color: #1a202c;
+}
+.hover\:bg-gray-100:hover {
+  background-color: #f7fafc;
+}
+.text-red-600 {
+  color: #e53e3e;
+}
+.hover\:bg-gray-100:hover {
+  background-color: #f7fafc;
+}
+
+/* General modal styles */
+.fixed {
+  position: fixed;
+}
+.inset-0 {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.bg-gray-800 {
+  background-color: rgba(31, 41, 55, 0.8);
+}
+.bg-opacity-50 {
+  background-opacity: 0.5;
+}
+.p-6 {
+  padding: 1.5rem;
+}
+.text-center {
+  text-align: center;
+}
+.transform {
+  transform: translateX(-50%);
+}
+.bg-green-500 {
+  background-color: #48bb78;
+}
+.text-white {
+  color: #fff;
+}
+.p-3 {
+  padding: 0.75rem;
+}
+.rounded {
+  border-radius: 0.375rem;
+}
+
+/* Hamburger Menu */
+.sm\:hidden {
+  display: none;
+}
+
+/* Styles for input elements */
+input[type="text"] {
+  transition: all 0.3s ease;
+}
+input[type="text"]:focus {
+  border-color: #1a202c;
+  outline: none;
+}
+
+/* Other styles for layout and positioning */
+.relative {
+  position: relative;
+}
+</style>

@@ -9,28 +9,49 @@
         {{ errorMessage }}
       </div>
 
-      <div class="filter-controls flex justify-between mb-4">
+      <!-- Check all/uncheck all buttons -->
+      <div class="filter-controls flex gap-2 mb-4">
         <button class="small-button bg-blue-500 text-white py-1 px-3 rounded" @click="checkAll">Check All</button>
         <button class="small-button bg-red-500 text-white py-1 px-3 rounded" @click="uncheckAll">Uncheck All</button>
       </div>
 
-      <div v-for="(filter, index) in filters" :key="index" class="filter-item mb-4">
-        <div class="flex items-center">
-          <input :id="'filter-' + index" type="checkbox" v-model="filters[index]" class="hidden" />
-          <label :for="'filter-' + index" class="toggle relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" :id="'filter-' + index" v-model="filters[index]" class="hidden" />
-            <span class="slider rounded"></span>
+      <!-- Toggle switches -->
+      <div class="toggle-switches mb-4">
+        <div v-for="(filter, index) in filters" :key="index" class="filter-item mb-4 flex items-center">
+          <label class="switch">
+            <input type="checkbox" v-model="filters[index]" />
+            <span class="slider"></span>
           </label>
           <label :for="'filter-' + index" class="ml-2">{{ checkboxLabels[index] }}</label>
         </div>
       </div>
 
-      <div v-for="(slider, index) in sliders" :key="index" class="slider-item mb-4">
-        <label :for="'slider-' + index">Slider {{ index + 1 }} (Value: {{ sliders[index] }})</label>
-        <input type="range" :id="'slider-' + index" v-model="sliders[index]" min="1" max="10" class="slider w-full" />
+      <!-- Price slider -->
+      <div class="price-slider mb-6">
+        <div class="card-content">
+          <div class="card-title">Maximum Price</div>
+          <div class="values">
+            <div>€<span id="max-price">{{ priceRange.max }}</span></div>
+          </div>
+          <div class="rangeslider">
+            <input
+              class="max input-ranges"
+              type="range"
+              min="500000"
+              max="2000000"
+              step="10000"
+              v-model="priceRange.max"
+              @input="handlePriceChange"
+            />
+          </div>
+        </div>
+      </div>
+      <div>
+        
       </div>
     </aside>
 
+    <!-- Property Cards -->
     <main class="properties-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-3/4">
       <div v-for="(property, index) in filteredProperties" :key="index"
         class="property-card bg-gray-600 rounded-lg p-4 cursor-pointer" @click="goToPropertyDetail(property.id)">
@@ -44,74 +65,60 @@
             <p class="property-detail"><strong>Postcode:</strong> {{ property.postcode }}</p>
             <p class="property-detail"><strong>Prijs:</strong> € {{ property.prijs }}</p>
           </div>
-          <div class="detail-row">
-            <p class="property-detail"><strong>Oppervlakte Huis:</strong> {{ property.oppervlakte_huis }} m²</p>
-            <p class="property-detail"><strong>Oppervlakte Tuin:</strong> {{ property.oppervlakte_tuin }} m²</p>
-          </div>
-        </div>
-        <div class="property-actions text-right">
-          <button @click.stop="openDeleteConfirmModal(index)" class="delete-button text-red-500">🗑️</button>
         </div>
       </div>
     </main>
-
-    <div v-if="isDeleteConfirmModalOpen"
-      class="modal fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-70">
-      <div class="modal-content bg-white p-4 rounded-lg text-center">
-        <h3>Weet je zeker dat je deze woning wilt verwijderen?</h3>
-        <p>{{ properties[deleteIndex]?.address }}</p>
-        <div class="modal-actions mt-4">
-          <button @click="confirmDelete"
-            class="confirm-button bg-green-500 text-white py-1 px-4 rounded">Verwijder</button>
-          <button @click="closeDeleteConfirmModal"
-            class="cancel-button bg-red-500 text-white py-1 px-4 rounded">Annuleer</button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import axios from 'axios';
 
-const filters = ref(Array(4).fill(false));
-const sliders = ref(Array(3).fill(1));
-const properties = ref([]);
-const isDeleteConfirmModalOpen = ref(false);
-const deleteIndex = ref(null);
+const filters = ref(Array(4).fill(false)); // Toggle switches state (Zwembad, Garage, Tuin, Zonnepanelen)
+const properties = ref([]); // All properties
 const defaultImage = 'https://via.placeholder.com/150';
 const checkboxLabels = ['Zwembad', 'Garage', 'Tuin', 'Zonnepanelen'];
 const errorMessage = ref(null);
 
-// Computed property for filtered properties
+// Price range values
+const priceRange = ref({ max: 500000 }); // Default to 500,000
+
+// Vue Router
+const router = useRouter();
+
+// Fetch houses from the API
+onMounted(() => {
+  fetchHouses();
+});
+
+async function fetchHouses() {
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/huizen');
+    properties.value = response.data;
+    errorMessage.value = null;
+  } catch (error) {
+    console.error('Error fetching houses:', error);
+    errorMessage.value = 'Er is een fout opgetreden bij het ophalen van de woningen.';
+  }
+}
+
+// Computed property to filter properties based on price and checkboxes
 const filteredProperties = computed(() => {
   return properties.value.filter(property => {
+    // Filter based on the toggled features (filters)
     const hasZwembad = filters.value[0] ? property.zwembad === "ja" : true;
     const hasGarage = filters.value[1] ? property.garage === "ja" : true;
     const hasTuin = filters.value[2] ? property.tuin === "ja" : true;
     const hasZonnepanelen = filters.value[3] ? property.zonnepanelen === "ja" : true;
 
-    return hasZwembad && hasGarage && hasTuin && hasZonnepanelen;
+    // Filter based on price
+    const isInPriceRange = property.prijs <= priceRange.value.max;
+
+    return hasZwembad && hasGarage && hasTuin && hasZonnepanelen && isInPriceRange;
   });
 });
-
-// Fetch houses on component mount
-onMounted(() => {
-  fetchHouses();
-});
-
-// Fetch houses from API
-async function fetchHouses() {
-  try {
-    const response = await axios.get('http://127.0.0.1:8000/api/huizen');
-    properties.value = response.data;
-    errorMessage.value = null; // Clear any previous error messages
-  } catch (error) {
-    console.error('Error fetching houses:', error.response ? error.response.data : error.message);
-    errorMessage.value = 'Er is een fout opgetreden bij het ophalen van de woningen.'; // Update the error message
-  }
-}
 
 // Check all filters
 function checkAll() {
@@ -123,88 +130,97 @@ function uncheckAll() {
   filters.value = filters.value.map(() => false);
 }
 
-// Navigate to property detail
+// Go to property detail page
 function goToPropertyDetail(id) {
-  // Assuming you have a router setup
-  this.$router.push({ name: 'PropertyDetail', params: { id } });
+  router.push({ name: 'PropertyDetail', params: { id } });
 }
 
-// Open delete confirmation modal
-function openDeleteConfirmModal(index) {
-  isDeleteConfirmModalOpen.value = true;
-  deleteIndex.value = index;
-}
-
-// Close delete confirmation modal
-function closeDeleteConfirmModal() {
-  isDeleteConfirmModalOpen.value = false;
-  deleteIndex.value = null;
-}
-
-// Confirm delete action
-function confirmDelete() {
-  properties.value.splice(deleteIndex.value, 1);
-  closeDeleteConfirmModal();
+// Handle price slider changes
+function handlePriceChange() {
+  // You could add more logic here if needed in the future
 }
 </script>
 
 <style scoped>
-.toggle {
+/* New Toggle Switch Styles */
+.switch {
+  --button-width: 3.5em;
+  --button-height: 2em;
+  --toggle-diameter: 1.5em;
+  --button-toggle-offset: calc((var(--button-height) - var(--toggle-diameter)) / 2);
+  --toggle-shadow-offset: 10px;
+  --toggle-wider: 3em;
+  --color-grey: #cccccc;
+  --color-green: #4296f4;
+}
+
+.slider {
   display: inline-block;
-  width: 60px;
-  /* Adjusted width for the toggle */
-  height: 34px;
-  /* Adjusted height for the toggle */
+  width: var(--button-width);
+  height: var(--button-height);
+  background-color: var(--color-grey);
+  border-radius: calc(var(--button-height) / 2);
+  position: relative;
+  transition: 0.3s all ease-in-out;
 }
 
-.toggle .slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  /* Default background color */
-  border-radius: 34px;
-  /* Rounded edges for the toggle */
-  transition: background-color 0.4s;
-}
-
-.toggle .slider:before {
-  position: absolute;
+.slider::after {
   content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  /* Color of the slider thumb */
+  display: inline-block;
+  width: var(--toggle-diameter);
+  height: var(--toggle-diameter);
+  background-color: #fff;
+  border-radius: calc(var(--toggle-diameter) / 2);
+  position: absolute;
+  top: var(--button-toggle-offset);
+  transform: translateX(var(--button-toggle-offset));
+  box-shadow: var(--toggle-shadow-offset) 0 calc(var(--toggle-shadow-offset) * 4) rgba(0, 0, 0, 0.1);
+  transition: 0.3s all ease-in-out;
+}
+
+.switch input[type="checkbox"]:checked + .slider {
+  background-color: var(--color-green);
+}
+
+.switch input[type="checkbox"]:checked + .slider::after {
+  transform: translateX(calc(var(--button-width) - var(--toggle-diameter) - var(--button-toggle-offset)));
+  box-shadow: calc(var(--toggle-shadow-offset) * -1) 0 calc(var(--toggle-shadow-offset) * 4) rgba(0, 0, 0, 0.1);
+}
+
+.switch input[type="checkbox"] {
+  display: none;
+}
+
+.switch input[type="checkbox"]:active + .slider::after {
+  width: var(--toggle-wider);
+}
+
+.switch input[type="checkbox"]:checked:active + .slider::after {
+  transform: translateX(calc(var(--button-width) - var(--toggle-wider) - var(--button-toggle-offset)));
+}
+
+.PB-range-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  background: #D5DBE1;
+  border-radius: 5px;
+  outline: none;
+}
+
+.PB-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background-color: #007bff;
   border-radius: 50%;
-  /* Rounded thumb */
-  transition: transform 0.4s;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
 }
 
-.toggle input:checked+.slider {
-  background-color: #2196F3;
-  /* Background color when checked */
+.PB-range-slidervalue {
+  font-weight: 600;
+  text-align: center;
+  margin-top: 10px;
 }
-
-.toggle input:focus+.slider {
-  box-shadow: 0 0 1px #2196F3;
-  /* Focus effect */
-}
-
-.toggle input:checked+.slider:before {
-  transform: translateX(26px);
-  /* Move the thumb when checked */
-}
-
-/* .toggle .dot {
-  transition: all 0.2s ease;
-}
-
-.toggle input:checked+span .dot {
-  transform: translateX(100%);
-} */
 </style>
