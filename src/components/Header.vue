@@ -26,14 +26,6 @@
     <div class="flex items-center justify-center lg:justify-end relative">
       <Darkmode class="mr-4 hidden sm:inline-block" />
 
-<<<<<<< Updated upstream
-      <!-- Conditional Login/Logout Button -->
-      <button v-if="isLoggedIn" @click="confirmLogout" class="hover:text-gray-600 mr-4">
-        <p>Logout</p>
-      </button>
-      <button v-else @click="confirmNavigation('/login')" class="hover:text-gray-600 mr-4">
-        <p>Login</p>
-=======
       <!-- Conditional Logout or Login Button -->
       <button v-if="isLoggedIn" @click="confirmLogout"
         class="bg-blue-700 hover:bg-cyan-500 text-white font-bold py-1 px-4 rounded mr-2">
@@ -42,7 +34,6 @@
       <button v-else @click="toggleLoginModal"
         class="bg-blue-400 hover:bg-cyan-500 text-white font-bold py-1 px-4 rounded mr-2">
         Login
->>>>>>> Stashed changes
       </button>
 
       <!-- User Profiling Button -->
@@ -59,44 +50,6 @@
     </div>
   </div>
 
-<<<<<<< Updated upstream
-    <!-- Mobile Menu (toggle) -->
-    <div v-if="isMenuOpen" class="absolute top-12 left-0 w-full bg-blue-500 p-4 sm:hidden">
-      <div class="flex flex-col space-y-2">
-        <router-link to="/films" class="text-white" @click="toggleMenu">Films</router-link>
-        <router-link to="/series" class="text-white" @click="toggleMenu">Series</router-link>
-        <router-link to="/latest" class="text-white" @click="toggleMenu">Latest</router-link>
-        <router-link v-if="!isLoggedIn" to="/login" class="text-white" @click="confirmNavigation('/login')">Login</router-link>
-        <router-link v-else to="/" class="text-white" @click="confirmLogout">Logout</router-link>
-        <router-link to="/settings" class="text-white" @click="confirmNavigation('/settings')">Settings</router-link>
-      </div>
-    </div>
-
-    <!-- Confirmation Modals -->
-    <div v-if="showConfirm" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-      <div class="bg-white p-6 rounded shadow-lg text-center">
-        <p>Are you sure you want to leave this page?</p>
-        <div class="mt-4">
-          <button @click="navigateToTarget" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4">Yes</button>
-          <button @click="cancelNavigation" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">No</button>
-        </div>
-      </div>
-    </div>
-
-    <div v-if="showLogoutConfirm" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-      <div class="bg-white p-6 rounded shadow-lg text-center">
-        <p>Are you sure you want to log out?</p>
-        <div class="mt-4">
-          <button @click="logoutConfirmed" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-4">Yes</button>
-          <button @click="cancelLogout" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">No</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Logout Success Message -->
-    <div v-if="logoutMessage" class="fixed top-16 left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-3 rounded">
-      {{ logoutMessage }}
-=======
   <!-- Login Modal -->
   <div v-if="showLoginModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
     <div class="bg-white p-6 rounded shadow-lg text-center w-80">
@@ -106,7 +59,6 @@
       <button @click="login" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">Login</button>
       <router-link to="/register" class="block mt-4 text-blue-600 hover:underline">Create an account</router-link>
       <button @click="toggleLoginModal" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4">Close</button>
->>>>>>> Stashed changes
     </div>
   </div>
 </template>
@@ -118,81 +70,6 @@ import { useRouter } from 'vue-router';
 import dropdown from '@/components/dropdown.vue';
 import Darkmode from '@/components/Darkmode.vue';
 
-<<<<<<< Updated upstream
-// State for mobile menu and dropdown visibility
-const isMenuOpen = ref(false);
-const dropdownVisible = ref(false);
-
-// State to check if user is logged in
-const isLoggedIn = ref(false);
-
-// State to manage confirmation modals
-const showConfirm = ref(false);
-const showLogoutConfirm = ref(false);
-const targetRoute = ref(null);
-const logoutMessage = ref('');
-const router = useRouter();
-
-// Check if token exists in localStorage when the component is mounted
-onMounted(() => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    isLoggedIn.value = true; // Set as logged in if token exists
-  }
-});
-
-// Function to toggle the dropdown menu visibility
-const toggleDropdown = () => {
-  dropdownVisible.value = !dropdownVisible.value;
-};
-
-// Function to toggle mobile menu
-const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value;
-};
-
-// Function to show confirmation dialog for navigation
-const confirmNavigation = (route) => {
-  targetRoute.value = route;
-  showConfirm.value = true;
-};
-
-// Function to proceed with navigation if user confirms
-const navigateToTarget = () => {
-  router.push(targetRoute.value);
-  showConfirm.value = false;
-};
-
-// Function to cancel navigation and hide the confirmation modal
-const cancelNavigation = () => {
-  showConfirm.value = false;
-};
-
-// Function to show logout confirmation dialog
-const confirmLogout = () => {
-  showLogoutConfirm.value = true;
-};
-
-// Function to confirm and proceed with logout
-const logoutConfirmed = () => {
-  localStorage.removeItem('token'); // Remove the token from localStorage
-  isLoggedIn.value = false; // Update logged-in state
-  showLogoutConfirm.value = false; // Hide logout confirmation modal
-
-  // Set the logout success message
-  logoutMessage.value = 'Successfully logged out!';
-
-  // Clear the message after 3 seconds
-  setTimeout(() => {
-    logoutMessage.value = '';
-  }, 3000);
-};
-
-// Function to cancel logout and hide confirmation modal
-const cancelLogout = () => {
-  showLogoutConfirm.value = false;
-};
-=======
 // State Variables
 const showLoginModal = ref(false);
 const dropdownVisible = ref(false);
@@ -241,7 +118,6 @@ const login = async () => {
   }
 };
 
->>>>>>> Stashed changes
 </script>
 
 <style scoped>
