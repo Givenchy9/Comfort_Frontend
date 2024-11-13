@@ -10,7 +10,7 @@ const router = createRouter({
       name: 'home',
       components: {  // Using 'components' for named views
         default: () => import('../views/HomeView.vue'),
-        header: Header,
+        // header: Header,
       }
     },
     {
@@ -18,7 +18,7 @@ const router = createRouter({
       name: 'Login',
       components: {  // Using 'components' for named views
         default: () => import('../views/Login.vue'),
-        header: Header,
+        // header: Header,
       }
     },
     {
@@ -26,7 +26,7 @@ const router = createRouter({
       name: 'register1',
       components: {  // Using 'components' for named views
         default: () => import('../views/register1.vue'),
-        header: Header,
+        // header: Header,
       }
     },
     {
@@ -34,7 +34,7 @@ const router = createRouter({
       name: 'register2',
       components: {  // Using 'components' for named views
         default: () => import('../views/register2.vue'),
-        header: Header,
+        // header: Header,
       }
     },
     {

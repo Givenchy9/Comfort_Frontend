@@ -5,16 +5,13 @@
       <router-link to="/" class="inline-block mr-2">
         <img src="/favicon.ico" alt="favicon" class="w-6 h-6" />
       </router-link>
-      <!-- Dropdown component (hidden on mobile, visible on larger screens) -->
       <dropdown class="hidden sm:inline-block" />
-
-      <!-- Hamburger Menu for mobile (only visible on small screens) -->
       <button class="block sm:hidden" @click="toggleMenu">
         <i class="fa-solid fa-bars fa-xl text-white"></i>
       </button>
     </div>
 
-    <!-- Center Section: Search Bar (hidden on mobile) -->
+    <!-- Center Section: Search Bar -->
     <div class="flex items-center justify-center w-full">
       <input type="text" placeholder="Search..."
         class="block w-2/3 rounded-md border-0 py-1.5 px-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 hidden sm:block" />
@@ -23,16 +20,40 @@
     <!-- Right Section: Darkmode and Buttons -->
     <div class="flex items-center justify-center lg:justify-end">
       <Darkmode class="mr-4 hidden sm:inline-block" />
-      <!-- Conditional Login/Logout Button -->
-      <button v-if="isLoggedIn" @click="confirmLogout" class="hover:text-gray-600 mr-4">
+      <button v-if="isLoggedIn" @click="confirmLogout"
+        class="bg-blue-700 hover:bg-cyan-500 text-white font-bold py-1 px-4 rounded">
         <p>Logout</p>
       </button>
-      <button v-else @click="confirmNavigation('/login')" class="hover:text-gray-600 mr-4">
+      <button v-else @click="toggleLoginModal"
+        class="bg-blue-400 hover:bg-cyan-500 text-white font-bold py-1 px-4 rounded">
         <p>Login</p>
       </button>
       <button @click="confirmNavigation('/settings')" class="hover:text-gray-600">
         <i class="fa-solid fa-gear fa-xl"></i>/<i class="fa-solid fa-user fa-xl"></i>
       </button>
+    </div>
+
+    <!-- Login Popup Modal -->
+    <div v-if="showLoginModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+      <div class="bg-white p-6 rounded shadow-lg text-center w-80">
+        <p class="text-lg font-bold mb-4">Login to Your Account</p>
+        <input type="text" placeholder="Email" v-model="email" class="border p-2 mb-2 w-full rounded">
+        <input type="password" placeholder="Password" v-model="password" class="border p-2 mb-4 w-full rounded">
+        <button @click="login" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-2 w-full">
+          Login
+        </button>
+        <RouterLink to="/register" class="font-bold block text-center hover:text-blue-600 hover:underline mt-2">
+          Account maken? klik hier
+        </RouterLink>
+        <button>new Div</button>
+        <button @click="toggleLoginModal"
+          class="bg-red-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-2">
+          <i class="fa-solid fa-delete-left"></i>
+        </button>
+      </div>
+      <div class="bg-white p-6 rounded shadow-lg text-center w-80">
+        <p>hello</p>
+      </div>
     </div>
 
     <!-- Mobile Menu (toggle) -->
@@ -41,9 +62,7 @@
         <router-link to="/films" class="text-white" @click="toggleMenu">Films</router-link>
         <router-link to="/series" class="text-white" @click="toggleMenu">Series</router-link>
         <router-link to="/latest" class="text-white" @click="toggleMenu">Latest</router-link>
-        <!-- Conditional Login/Logout in Mobile Menu -->
-        <router-link v-if="!isLoggedIn" to="/login" class="text-white"
-          @click="confirmNavigation('/login')">Login</router-link>
+        <router-link v-if="!isLoggedIn" to="/login" class="text-white" @click="toggleLoginModal">Login</router-link>
         <router-link v-else to="/" class="text-white" @click="confirmLogout">Logout</router-link>
         <router-link to="/settings" class="text-white" @click="confirmNavigation('/settings')">Settings</router-link>
       </div>
@@ -84,8 +103,14 @@
 
     <!-- Logout Success Message -->
     <div v-if="logoutMessage"
-      class="fixed top-16 left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-3 rounded">
+      class="fixed top-16 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white p-3 rounded">
       {{ logoutMessage }}
+    </div>
+
+    <!-- Login Success Message -->
+    <div v-if="loginMessage"
+      class="fixed top-16 left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-3 rounded">
+      {{ loginMessage }}
     </div>
   </div>
 </template>
@@ -95,74 +120,86 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import dropdown from '@/components/dropdown.vue';
 import Darkmode from '@/components/Darkmode.vue';
+import { AuthService } from '../services/authService';
 
-// State to manage confirmation modals
+// State management
+const showLoginModal = ref(false);
 const showConfirm = ref(false);
 const showLogoutConfirm = ref(false);
 const targetRoute = ref(null);
 const router = useRouter();
-
-// State for mobile menu
 const isMenuOpen = ref(false);
-
-// State to check if user is logged in
 const isLoggedIn = ref(false);
-
-// State to manage logout success message
+const loginMessage = ref('');
 const logoutMessage = ref('');
+const email = ref('');
+const password = ref('');
+const error = ref('');
 
-// Check if token exists in localStorage when the component is mounted
+// Check token on mount
 onMounted(() => {
   const token = localStorage.getItem('token');
-  if (token) {
-    isLoggedIn.value = true; // Set as logged in if token exists
-  }
+  isLoggedIn.value = !!token;
 });
 
-// Function to show confirmation dialog for navigation
+// Toggle functions
+const toggleLoginModal = () => {
+  showLoginModal.value = !showLoginModal.value;
+};
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
+};
+
+// Confirm navigation
 const confirmNavigation = (route) => {
   targetRoute.value = route;
   showConfirm.value = true;
 };
 
-// Function to proceed with navigation if user confirms
 const navigateToTarget = () => {
   router.push(targetRoute.value);
   showConfirm.value = false;
 };
 
-// Function to cancel navigation and hide the confirmation modal
 const cancelNavigation = () => {
   showConfirm.value = false;
 };
 
-// Function to toggle mobile menu
-const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value;
-};
-
-// Function to show logout confirmation dialog
+// Logout confirmation
 const confirmLogout = () => {
   showLogoutConfirm.value = true;
 };
 
-// Function to confirm and proceed with logout
 const logoutConfirmed = () => {
-  localStorage.removeItem('token'); // Remove the token from localStorage
-  isLoggedIn.value = false; // Update logged-in state
-  showLogoutConfirm.value = false; // Hide logout confirmation modal
-
-  // Set the logout success message
-  logoutMessage.value = 'Successfully logged out!';
-
-  // Clear the message after 3 seconds
+  localStorage.removeItem('token');
+  isLoggedIn.value = false;
+  showLogoutConfirm.value = false;
+  logoutMessage.value = 'Logout Successfully!';
   setTimeout(() => {
     logoutMessage.value = '';
   }, 3000);
 };
 
-// Function to cancel logout and hide confirmation modal
 const cancelLogout = () => {
   showLogoutConfirm.value = false;
+};
+
+// Login function with login success message
+const login = async () => {
+  error.value = '';
+  try {
+    const response = await AuthService.login({ email: email.value, password: password.value });
+    localStorage.setItem('token', response.data.token);
+    isLoggedIn.value = true;
+    showLoginModal.value = false;
+    loginMessage.value = 'Login successful!';
+    setTimeout(() => {
+      loginMessage.value = '';
+    }, 3000); // Clear the login message after 3 seconds
+    router.push('/');
+  } catch (err) {
+    error.value = err.response?.data?.message || 'Uw email komt niet overeen met het gekozen wachtwoord';
+  }
 };
 </script>
