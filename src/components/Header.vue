@@ -1,9 +1,9 @@
 <template>
   <div>
     <!-- Fixed Header -->
-    <div class="fixed top-0 left-0 right-0 bg-blue-500 grid grid-cols-3 py-2 border-2 border-black items-center justify-items-center px-4 z-10">
+    <div class="fixed top-0 left-0 right-0 bg-blue-500 grid grid-cols-3 py-2 border-2 border-black items-center px-4 z-10">
       <!-- Left Section: Logo and Dropdown -->
-      <div class="flex items-center justify-center lg:justify-start">
+      <div class="flex items-center justify-start">
         <router-link to="/" class="inline-block mr-2">
           <img src="/favicon.ico" alt="favicon" class="w-6 h-6" />
         </router-link>
@@ -13,23 +13,30 @@
         </button>
       </div>
 
-      <!-- Center Section: Search Bar -->
-      <div class="flex items-center justify-center w-full">
-        <input type="text" placeholder="Search..." class="block w-2/3 rounded-md border-0 py-1.5 px-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 hidden sm:block" />
-      </div>
+      <!-- Middle section (if needed for spacing, can be empty) -->
+      <div></div>
 
       <!-- Right Section: Darkmode and Buttons -->
-      <div class="flex items-center justify-center lg:justify-end">
-        <Darkmode class="mr-4 hidden sm:inline-block" />
+      <div class="flex items-center justify-end space-x-4">
+        <Darkmode class="hidden sm:inline-block" />
         <button v-if="isLoggedIn" @click="confirmLogout" class="bg-blue-700 hover:bg-cyan-500 text-white font-bold py-1 px-4 rounded">
           <p>Logout</p>
         </button>
         <button v-else @click="toggleLoginModal" class="bg-blue-400 hover:bg-cyan-500 text-white font-bold py-1 px-4 rounded">
           <p>Login</p>
         </button>
-        <button @click="confirmNavigation('/settings')" class="hover:text-gray-600">
-          <i class="fa-solid fa-gear fa-xl"></i>/<i class="fa-solid fa-user fa-xl"></i>
-        </button>
+        <div class="relative inline-block text-left">
+          <!-- Dropdown Button -->
+          <button @click="toggleDropdown" class="hover:text-gray-600">
+            <i class="fa-solid fa-gear fa-xl"></i>/<i class="fa-solid fa-user fa-xl"></i>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div v-if="dropdownVisible" class="dropdown-menu absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md py-1">
+            <a href="#" @click="confirmNavigation('/settings')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Instellingen</a>
+            <a href="#" @click="confirmNavigation('/profile')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profiel</a>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -40,45 +47,44 @@
 
     <!-- Login Popup Modal -->
     <div v-if="showLoginModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-  <div class="bg-white p-6 rounded shadow-lg text-center w-80">
-    <p class="text-lg font-bold mb-4">Login to Your Account</p>
-    <input 
-      type="email" 
-      placeholder="Email" 
-      v-model="email" 
-      class="border p-2 mb-2 w-full rounded"
-      :class="{'border-red-500': emailError}" 
-      @input="validateEmail"
-    >
-    <input 
-      type="password" 
-      placeholder="Password" 
-      v-model="password" 
-      class="border p-2 mb-4 w-full rounded"
-      :class="{'border-red-500': passwordError}" 
-    >
-    <button 
-      @click="login" 
-      :disabled="isSubmitting || !email || !password" 
-      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-2 w-full"
-    >
-      Login
-    </button>
-    <button 
-      @click="toggleRegisterModal" 
-      class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-2 w-full"
-    >
-      Account maken (klik hier)
-    </button>
-    <button 
-      @click="toggleLoginModal" 
-      class="bg-red-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-2"
-    >
-      <i class="fa-solid fa-delete-left"></i>
-    </button>
-  </div>
-</div>
-
+      <div class="bg-white p-6 rounded shadow-lg text-center w-80">
+        <p class="text-lg font-bold mb-4">Login to Your Account</p>
+        <input
+          type="email"
+          placeholder="Email"
+          v-model="email"
+          class="border p-2 mb-2 w-full rounded"
+          :class="{'border-red-500': emailError}"
+          @input="validateEmail"
+        >
+        <input
+          type="password"
+          placeholder="Password"
+          v-model="password"
+          class="border p-2 mb-4 w-full rounded"
+          :class="{'border-red-500': passwordError}"
+        >
+        <button
+          @click="login"
+          :disabled="isSubmitting || !email || !password"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-2 w-full"
+        >
+          Login
+        </button>
+        <button
+          @click="toggleRegisterModal"
+          class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-2 w-full"
+        >
+          Account maken (klik hier)
+        </button>
+        <button
+          @click="toggleLoginModal"
+          class="bg-red-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-2"
+        >
+          <i class="fa-solid fa-delete-left"></i>
+        </button>
+      </div>
+    </div>
 
     <!-- Registration Popup Modal -->
     <div v-if="showRegisterModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
@@ -102,7 +108,7 @@
       </div>
     </div>
 
-    <!-- Confirmation Modals -->
+    <!-- Confirmation Modal for Navigation -->
     <div v-if="showConfirm" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
       <div class="bg-white p-6 rounded shadow-lg text-center">
         <p>Are you sure you want to leave this page?</p>
@@ -117,6 +123,7 @@
       </div>
     </div>
 
+    <!-- Confirmation Modal for Logout -->
     <div v-if="showLogoutConfirm" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
       <div class="bg-white p-6 rounded shadow-lg text-center">
         <p>Are you sure you want to log out?</p>
@@ -147,9 +154,9 @@
 // Your script remains unchanged, only imports and state management
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { AuthService } from '@/services/authService';
 import dropdown from '@/components/dropdown.vue';
 import Darkmode from '@/components/Darkmode.vue';
+import { AuthService } from '../services/authService';
 import register1 from '@/components/register1.vue';
 
 const showLoginModal = ref(false);
@@ -160,6 +167,7 @@ const targetRoute = ref(null);
 const router = useRouter();
 const isMenuOpen = ref(false);
 const isLoggedIn = ref(false);
+const dropdownVisible = ref(false);
 const loginMessage = ref('');
 const logoutMessage = ref('');
 const email = ref('');
@@ -195,14 +203,17 @@ const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
 
+const toggleDropdown = () => {
+  dropdownVisible.value = !dropdownVisible.value;
+};
+
 const confirmNavigation = (route) => {
   targetRoute.value = route;
   showConfirm.value = true;
 };
 
 const confirmLogout = () => {
-  localStorage.removeItem('token');
-  isLoggedIn.value = false;
+  showLogoutConfirm.value = true;
 };
 
 const login = async () => {
@@ -248,6 +259,7 @@ const login = async () => {
   }
 };
 
+
 // Logout Functionality
 const logoutConfirmed = () => {
   localStorage.removeItem('token');
@@ -278,89 +290,40 @@ const navigateToTarget = () => {
 </script>
 
 <style scoped>
-/* General Styles */
-.absolute {
-  position: absolute;
-}
-.top-12 {
-  top: 3rem;
-}
-.right-0 {
+/* Ensures the header is fixed at the top */
+.fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
   right: 0;
 }
-.bg-white {
-  background-color: white;
+
+/* Grid layout for header with 3 columns */
+.grid-cols-3 {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* Left (logo), Center (empty space), Right (buttons) */
+  gap: 0;
 }
-.shadow-lg {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+/* Ensures that the right section aligns its items properly */
+.flex.justify-end {
+  justify-content: flex-end;
+  display: flex;
+  align-items: center;
 }
-.rounded-md {
-  border-radius: 0.375rem;
+
+/* Adjust space between the right section items */
+.space-x-4 > * {
+  margin-right: 1rem;
 }
-.w-48 {
+
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
   width: 12rem;
-}
-.p-2 {
-  padding: 0.5rem;
-}
-.text-gray-900 {
-  color: #1a202c;
-}
-.hover\:bg-gray-100:hover {
-  background-color: #f7fafc;
-}
-.text-red-600 {
-  color: #e53e3e;
-}
-.bg-gray-800 {
-  background-color: rgba(31, 41, 55, 0.8);
-}
-.bg-opacity-50 {
-  background-opacity: 0.5;
-}
-.p-6 {
-  padding: 1.5rem;
-}
-.text-center {
-  text-align: center;
-}
-.w-80 {
-  width: 20rem;
-}
-.mb-4 {
-  margin-bottom: 1rem;
-}
-.mb-2 {
-  margin-bottom: 0.5rem;
-}
-.hover\:underline:hover {
-  text-decoration: underline;
-}
-.font-bold {
-  font-weight: bold;
-}
-.rounded {
-  border-radius: 0.25rem;
-}
-.hover\:bg-cyan-500:hover {
-  background-color: #22d3ee;
-}
-.hover\:bg-blue-700:hover {
-  background-color: #1d4ed8;
-}
-.bg-blue-500 {
-  background-color: #3b82f6;
-}
-.bg-blue-700 {
-  background-color: #1e40af;
-}
-.bg-blue-400 {
-  background-color: #60a5fa;
-} 
-.bg-red-500 {
-  background-color: #ef4444;
-}
-.hover\:bg-red-700:hover {
-  background-color: #b91c1c;
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 </style>

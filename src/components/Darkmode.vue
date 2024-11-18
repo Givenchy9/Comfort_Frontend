@@ -11,6 +11,6 @@ const toggleDark = useToggle(isDark)
     <button @click="toggleDark()"
         class="px-4 py-1 text-white bg-blue-600 rounded dark:bg-blue-400 dark:hover:bg-blue-600 hover:bg-blue-400 flex items-center">
         <i :class="isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon'" class="mr-2"></i> <!-- FontAwesome Icon -->
-        {{ isDark ? 'Darkmode On' : 'Darkmode Off' }}
+        {{ isDark ? 'Donkere modus aan' : 'Donkere modus uit' }}
     </button>
 </template>
