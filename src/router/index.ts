@@ -77,7 +77,7 @@ const router = createRouter({
       name: 'Settings',    // The name of the route
       components: {        // Using 'components' for named views
         default: () => import('../views/settings.vue'), // Lazy-load the settings component
-        header: Header,    // You can keep the header component if it's used globally
+        //header: Header,    // You can keep the header component if it's used globally
       }
     }, 
   ]
