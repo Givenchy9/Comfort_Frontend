@@ -38,6 +38,30 @@ const router = createRouter({
       }
     },
     {
+      path: '/admin',
+      name: 'admin',
+      components: {  // Using 'components' for named views
+        default: () => import('../views/admin.vue'),
+        // header: Header,
+      }
+    },
+    {
+      path: '/adminhuizen',
+      name: 'adminhuizen',
+      components: {  // Using 'components' for named views
+        default: () => import('../views/AdminHuizen.vue'),
+        // header: Header,
+      }
+    },
+    {
+      path: '/users',
+      name: 'users',
+      components: {  // Using 'components' for named views
+        default: () => import('../views/users.vue'),
+        // header: Header,
+      }
+    },
+    {
       path: '/huizen',
       name: 'Huizen',
       component: () => import('@/views/Huizen.vue')  // Single component, no named views, so 'component' is correct
@@ -61,18 +85,43 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token'); // Get token from localStorage
-  console.log('Token:', token);
+  const userEmail = localStorage.getItem('userEmail', 'admin@example.com'); // Get the user email (you might be storing this in localStorage)
 
-  // If the user is logged in (token exists)
+  // Debugging logs
+  console.log('beforeEach:');
+  console.log('Token:', token);
+  console.log('User Email:', userEmail);
+
+  // Check if the user is logged in (token exists)
   if (token) {
-    // If the route is login or register1 (the first registration page), redirect to home
-    if (to.name === 'Login' || to.name === 'register1' || to.name === 'register2') {
-      next({ name: 'home' });
+    console.log('Token exists, checking user email...');
+
+    // Check if the user email matches the admin email
+    if (userEmail === "admin@example.com") {
+      console.log('User is admin, redirecting to admin page...');
+      
+      // If not already on the admin page, redirect to admin
+      if (to.name !== 'admin') {
+        console.log('Redirecting to admin...');
+        next({ name: 'admin' });
+      } else {
+        console.log('Already on admin page, continuing...');
+        next();
+      }
     } else {
-      next(); // Proceed to other routes
+      console.log('User is not admin, proceeding to requested route...');
+      
+      // Normal behavior for non-admin users
+      if (to.name === 'Login' || to.name === 'register1' || to.name === 'register2') {
+        next({ name: 'home' });
+      } else {
+        next(); // Proceed to other routes
+      }
     }
   } else {
-    // If the route requires auth and the token doesn't exist
+    console.log('No token found, redirecting to login...');
+    
+    // If the route requires authentication and no token exists, redirect to login
     if (to.matched.some(record => record.meta.requiresAuth)) {
       next({ name: 'Login' });
     } else {

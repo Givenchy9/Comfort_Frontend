@@ -5,15 +5,17 @@
     </header>
 
     <div class="image-gallery">
-      <div class="image-container">
-        <img :src="property.image" alt="foto van huis" />
+      <!-- Check if pictures object exists -->
+      <div v-if="property.pictures" class="image-container">
+        <!-- If picture exists, show it -->
+        <img :src="getImageUrl(property.pictures.picture)" alt="Foto van huis" />
       </div>
-      <div class="image-container">
-        <img :src="property.image" alt="foto van huis" />
+      <!-- Optional: Handle case where no picture is available -->
+      <div v-else>
+        <p>No picture available</p>
       </div>
     </div>
 
-    <!-- New Radio Button Slider Section -->
     <div class="mydict">
       <div>
         <label>
@@ -34,14 +36,8 @@
         </label>
       </div>
     </div>
-    <!-- End of Radio Button Slider Section -->
 
     <div class="content">
-      <div v-if="activeTab === 'photos'" class="tab-content">
-        <h2>Foto's</h2>
-        <p>Hier komen de foto's van de woning.</p>
-      </div>
-
       <div v-if="activeTab === 'info'" class="tab-content">
         <h2>Informatie</h2>
         <ul>
@@ -64,17 +60,13 @@
           <li><strong>Zwembad:</strong> {{ property.zwembad }}</li>
           <li><strong>Tuin:</strong> {{ property.tuin }}</li>
           <li><strong>Zonnepanelen:</strong> {{ property.zonnepanelen }}</li>
+          <!-- Insert Image Here -->
+          <li><strong>Afbeelding:</strong> 
+            <!-- Check if the picture exists -->
+            <img v-if="property.pictures" :src="getImageUrl(property.pictures.picture)" alt="Property Image" style="max-width: 100%;">
+            <p v-else>No image available</p>
+          </li>
         </ul>
-      </div>
-
-      <div v-if="activeTab === 'highlights'" class="tab-content">
-        <h2>Bezienswaardigheden</h2>
-        <p>Hier komen de bezienswaardigheden.</p>
-      </div>
-
-      <div v-if="activeTab === 'reviews'" class="tab-content">
-        <h2>Reviews</h2>
-        <p>Hier komen de reviews.</p>
       </div>
     </div>
   </div>
@@ -97,7 +89,7 @@ export default {
     async fetchPropertyDetails(id) {
       console.log(`Fetching property details for ID: ${id}`); // Log the ID
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/huizen/${id}`); // Update this line
+        const response = await axios.get(`http://127.0.0.1:8000/api/huizen/${id}`);
         this.property = response.data; // Store the fetched data in the 'property' object
       } catch (error) {
         console.error('Er is een fout opgetreden bij het ophalen van de woninggegevens:', error.message);
@@ -110,6 +102,10 @@ export default {
       const tabIndex = tabsOrder.indexOf(tab);
       return tabIndex <= currentIndex; // Return true if the tab is the active one or before it
     },
+    // Method to get the full image URL (assuming the picture is stored under 'storage')
+    getImageUrl(picturePath) {
+      return `http://127.0.0.1:8000/storage/${picturePath}`;
+    },
   },
   created() {
     // Get the property ID from the route and fetch the details when the component is created
@@ -118,6 +114,9 @@ export default {
   },
 };
 </script>
+
+
+
 
 <style scoped>
 .property-detail {
