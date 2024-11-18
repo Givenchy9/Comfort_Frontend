@@ -8,7 +8,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      components: {  // Using 'components' for named views
+      components: {
         default: () => import('../views/HomeView.vue'),
         header: Header,
       }
@@ -16,7 +16,7 @@ const router = createRouter({
     {
       path: '/Login',
       name: 'Login',
-      components: {  // Using 'components' for named views
+      components: {
         default: () => import('../views/Login.vue'),
         header: Header,
       }
@@ -24,7 +24,7 @@ const router = createRouter({
     {
       path: '/register',
       name: 'register1',
-      components: {  // Using 'components' for named views
+      components: {
         default: () => import('../views/register1.vue'),
         header: Header,
       }
@@ -32,7 +32,7 @@ const router = createRouter({
     {
       path: '/register_validation',
       name: 'register2',
-      components: {  // Using 'components' for named views
+      components: {
         default: () => import('../views/register2.vue'),
         header: Header,
       }
@@ -40,43 +40,51 @@ const router = createRouter({
     {
       path: '/huizen',
       name: 'Huizen',
-      component: () => import('@/views/Huizen.vue')  // Single component, no named views, so 'component' is correct
+      component: () => import('@/views/Huizen.vue')
     },
     {
-      path: '/property/:id', // New route for property details
+      path: '/property/:id',
       name: 'PropertyDetail',
-      component: PropertyDetail, // Single component, no named views, so 'component' is correct
-      props: true, // Pass parameters as props
+      component: PropertyDetail,
+      props: true
     },
     {
-      path: '/settings',  // The URL path for the settings page
-      name: 'Settings',    // The name of the route
-      components: {        // Using 'components' for named views
-        default: () => import('../views/settings.vue'), // Lazy-load the settings component
-        // header: Header,    // You can keep the header component if it's used globally
+      path: '/settings',
+      name: 'Settings',
+      components: {
+        default: () => import('../views/settings.vue'),
+        header: Header,
       }
-    }, 
+    },
+    // New Route for Huis Toevoegen
+    {
+      path: '/huis-toevoegen',
+      name: 'HuisToevoegen',
+      components: {
+        default: () => import('../views/huis-toevoegen.vue'),
+        header: Header,
+      }
+    },
+
   ]
 });
 
+// Global Navigation Guard
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token'); // Get token from localStorage
+  const token = localStorage.getItem('token');
   console.log('Token:', token);
 
-  // If the user is logged in (token exists)
   if (token) {
-    // If the route is login or register1 (the first registration page), redirect to home
     if (to.name === 'Login' || to.name === 'register1' || to.name === 'register2') {
       next({ name: 'home' });
     } else {
-      next(); // Proceed to other routes
+      next();
     }
   } else {
-    // If the route requires auth and the token doesn't exist
     if (to.matched.some(record => record.meta.requiresAuth)) {
       next({ name: 'Login' });
     } else {
-      next(); // Proceed to the route
+      next();
     }
   }
 });
