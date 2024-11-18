@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
 import PropertyDetail from "../views/PropertyDetail.vue";
-import Header from '../components/Header.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,118 +7,98 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      components: {  // Using 'components' for named views
+      components: {  
         default: () => import('../views/HomeView.vue'),
-        // header: Header,
       }
     },
     {
       path: '/Login',
       name: 'Login',
-      components: {  // Using 'components' for named views
+      components: {  
         default: () => import('../views/Login.vue'),
-        // header: Header,
       }
     },
     {
       path: '/register',
       name: 'register1',
-      components: {  // Using 'components' for named views
+      components: {  
         default: () => import('../views/register1.vue'),
-        // header: Header,
       }
     },
     {
       path: '/register_validation',
       name: 'register2',
-      components: {  // Using 'components' for named views
+      components: {  
         default: () => import('../views/register2.vue'),
-        // header: Header,
       }
     },
     {
       path: '/admin',
       name: 'admin',
-      components: {  // Using 'components' for named views
+      components: {  
         default: () => import('../views/admin.vue'),
-        // header: Header,
-      }
+      },
+      meta: { requiresAdmin: true } // Protected admin route
     },
     {
       path: '/adminhuizen',
       name: 'adminhuizen',
-      components: {  // Using 'components' for named views
+      components: {  
         default: () => import('../views/AdminHuizen.vue'),
-        // header: Header,
-      }
+      },
+      meta: { requiresAdmin: true } // Protected admin route
     },
     {
       path: '/users',
       name: 'users',
-      components: {  // Using 'components' for named views
+      components: {  
         default: () => import('../views/users.vue'),
-        // header: Header,
-      }
+      },
+      meta: { requiresAuth: true } // Protected route for authenticated users
     },
     {
       path: '/huizen',
       name: 'Huizen',
-      component: () => import('@/views/Huizen.vue')  // Single component, no named views, so 'component' is correct
+      component: () => import('@/views/Huizen.vue'),
+      meta: { requiresAuth: true } // Protected route for authenticated users
     },
     {
-      path: '/property/:id', // New route for property details
+      path: '/property/:id', 
       name: 'PropertyDetail',
-      component: PropertyDetail, // Single component, no named views, so 'component' is correct
-      props: true, // Pass parameters as props
+      component: PropertyDetail, 
+      props: true,
+      meta: { requiresAuth: true } // Protected route for authenticated users
     },
   ]
 });
 
+// Navigation Guard
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token'); // Get token from localStorage
-  const userEmail = localStorage.getItem('userEmail', 'admin@example.com'); // Get the user email (you might be storing this in localStorage)
+  const token = localStorage.getItem("token"); // Check if the user is logged in
+  const userRole = localStorage.getItem("role"); // Check the user's role
 
-  // Debugging logs
-  console.log('beforeEach:');
+  console.log('beforeEach Navigation Guard:');
   console.log('Token:', token);
-  console.log('User Email:', userEmail);
+  console.log('User Role:', userRole);
 
-  // Check if the user is logged in (token exists)
-  if (token) {
-    console.log('Token exists, checking user email...');
-
-    // Check if the user email matches the admin email
-    if (userEmail === "admin@example.com") {
-      console.log('User is admin, redirecting to admin page...');
-      
-      // If not already on the admin page, redirect to admin
-      if (to.name !== 'admin') {
-        console.log('Redirecting to admin...');
-        next({ name: 'admin' });
-      } else {
-        console.log('Already on admin page, continuing...');
-        next();
-      }
-    } else {
-      console.log('User is not admin, proceeding to requested route...');
-      
-      // Normal behavior for non-admin users
-      if (to.name === 'Login' || to.name === 'register1' || to.name === 'register2') {
-        next({ name: 'home' });
-      } else {
-        next(); // Proceed to other routes
-      }
+  // If the route requires authentication and there's no token, redirect to login
+  if (to.matched.some(record => record.meta.requiresAuth || record.meta.requiresAdmin)) {
+    if (!token) {
+      console.log("No token found, redirecting to login...");
+      return next({ name: "home" }); // Redirect to login
     }
-  } else {
-    console.log('No token found, redirecting to login...');
-    
-    // If the route requires authentication and no token exists, redirect to login
-    if (to.matched.some(record => record.meta.requiresAuth)) {
-      next({ name: 'Login' });
-    } else {
-      next(); // Proceed to the route
+
+    // If the route requires admin access, check the role
+    if (to.matched.some(record => record.meta.requiresAdmin)) {
+      if (userRole !== "admin") {
+        console.log("User is not admin, redirecting to home...");
+        return next({ name: "home" }); // Redirect to home for non-admin users
+      }
     }
   }
+
+  // Proceed to the route if no restrictions or checks are required
+  next();
 });
 
 export default router;

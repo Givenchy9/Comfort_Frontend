@@ -4,8 +4,8 @@
   
 
       <div v-if="successMessage" class="p-4 mb-4 text-sm text-emerald-500 rounded-xl bg-emerald-50 font-normal w-1/3 m-auto text-center">
-    <p>{{ successMessage }}</p><i class="fa-solid fa-circle-check"></i>
-</div>
+        <p>{{ successMessage }}</p><i class="fa-solid fa-circle-check"></i>
+        </div>
       <!-- Loading state -->
       <div v-if="loading" class="text-center font-bold text-3xl">
         <p class="text-gray-500">Loading...<i class="fa-solid fa-spinner fa-spin-pulse"></i></p>
@@ -35,6 +35,7 @@
   
           <h2 class="text-lg font-semibold">{{ user.first_name }}, {{ user.last_name }}</h2>
           <p class="text-gray-600">Email: {{ user.email }}</p>
+          <p class="text-gray-600">Role: {{ user.role }}</p>
           <p class="text-gray-600">Joined: {{ new Date(user.created_at).toLocaleDateString() }}</p>
   
           <button
@@ -142,40 +143,50 @@
       };
     },
     methods: {
-      async fetchUsers() {
-        this.loading = true;
-        this.error = null;
-        try {
-          const response = await axios.get("http://127.0.0.1:8000/api/allusers");
-          this.users = response.data.users;
-        } catch (err) {
-          this.error = "Failed to fetch users.";
-        } finally {
-          this.loading = false;
-        }
-      },
-  
-      async addUser() {
-        this.loading = true;
-        this.error = null;
-        try {
-          const response = await axios.post("http://127.0.0.1:8000/api/basicregister", this.newUser);
-          this.users.push(response.data.user);
-          this.newUser = { first_name: "", last_name: "", email: "", password: "" };
-          this.showAddUserForm = false;
-        } catch (err) {
-          this.error = "Failed to add user.";
-        } finally {
-          this.loading = false;
-        }
-      },
-  
-      async editUser() {
+  async fetchUsers() {
+    this.loading = true;
+    this.error = null;
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/api/allusers");
+      this.users = response.data.users;
+    } catch (err) {
+      this.error = "Failed to fetch users.";
+    } finally {
+      this.loading = false;
+    }
+  },
+
+  async addUser() {
+    this.loading = true;
+    this.error = null;
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/basicregister", this.newUser);
+      this.users.push(response.data.user);
+      this.newUser = { first_name: "", last_name: "", email: "", password: "" };
+      this.showAddUserForm = false;
+    } catch (err) {
+      this.error = "Failed to add user.";
+    } finally {
+      this.loading = false;
+    }
+  },
+
+  async editUser() {
     this.loading = true;
     this.error = null;
     this.successMessage = "";  // Reset success message before making the request
+    
+    // Prepare a new object containing only the updated fields
+    const updatedUser = {};
+
+    if (this.editingUser.first_name) updatedUser.first_name = this.editingUser.first_name;
+    if (this.editingUser.last_name) updatedUser.last_name = this.editingUser.last_name;
+    if (this.editingUser.email) updatedUser.email = this.editingUser.email;
+    if (this.editingUser.password) updatedUser.password = this.editingUser.password;
+    // Optional fields like gender, birthdate, etc. can be added here if needed
+
     try {
-        const response = await axios.put(`http://127.0.0.1:8000/api/user/${this.editingUser.id}`, this.editingUser);
+        const response = await axios.put(`http://127.0.0.1:8000/api/edituser/${this.editingUser.id}`, updatedUser);
         const index = this.users.findIndex(user => user.id === this.editingUser.id);
         this.users.splice(index, 1, response.data.user);
         this.editingUser = null;
@@ -197,25 +208,33 @@
 },
 
 
+  async deleteUser(id) {
+    this.loading = true;
+    this.error = null;
+    this.successMessage = "";  // Reset success message before making the request
+    try {
+      await axios.delete(`http://127.0.0.1:8000/api/deleteuser/${id}`);
+      this.users = this.users.filter(user => user.id !== id);
 
+      // Set success message after successful delete
+      this.successMessage = "User deleted successfully!";
 
-  
-      async deleteUser(id) {
-        this.loading = true;
-        this.error = null;
-        try {
-          await axios.delete(`http://127.0.0.1:8000/api/user/${id}`);
-          this.users = this.users.filter(user => user.id !== id);
-        } catch (err) {
-          this.error = "Failed to delete user.";
-        } finally {
-          this.loading = false;
-        }
-      },
-  
-      startEditing(user) {
-        this.editingUser = { ...user };
-      },
+      // Hide the success message after 3 seconds
+      setTimeout(() => {
+          this.successMessage = "";
+      }, 3000);
+    } catch (err) {
+      this.error = "Failed to delete user.";
+    } finally {
+      this.loading = false;
+    }
+  },
+
+  // Define startEditing method
+  startEditing(user) {
+    this.editingUser = { ...user }; // Create a copy of the user to avoid directly mutating the users array
+  }
+
     },
   
     mounted() {
