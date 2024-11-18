@@ -2,7 +2,6 @@
 
   <!-- Search Section for Rental Properties -->
   <div class="search-section">
-    <h2>Zoek een huurwoning</h2>
     <div class="search-form">
       <input type="text" placeholder="Locatie" v-model="location" class="search-input" />
       <input type="number" placeholder="Huurprijs" v-model="price" class="search-input" />

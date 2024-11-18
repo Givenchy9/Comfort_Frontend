@@ -89,6 +89,7 @@
         </button>
       </div>
     </div>
+  </div>
 
     <!-- Mobile Menu (toggle) -->
     <div v-if="isMenuOpen" class="absolute top-12 left-0 w-full bg-blue-500 p-4 sm:hidden">
@@ -147,6 +148,7 @@
 // Your script remains unchanged, only imports and state management
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { AuthService } from '@/services/authService';
 import dropdown from '@/components/dropdown.vue';
 import Darkmode from '@/components/Darkmode.vue';
 import { AuthService } from '../services/authService';
@@ -201,7 +203,8 @@ const confirmNavigation = (route) => {
 };
 
 const confirmLogout = () => {
-  showLogoutConfirm.value = true;
+  localStorage.removeItem('token');
+  isLoggedIn.value = false;
 };
 
 const login = async () => {
@@ -276,13 +279,90 @@ const navigateToTarget = () => {
 };
 </script>
 
-
 <style scoped>
-/* Ensures the header is fixed at the top */
-.fixed {
-  position: fixed;
-  top: 0;
-  left: 0;
+/* General Styles */
+.absolute {
+  position: absolute;
+}
+.top-12 {
+  top: 3rem;
+}
+.right-0 {
   right: 0;
+}
+.bg-white {
+  background-color: white;
+}
+.shadow-lg {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.rounded-md {
+  border-radius: 0.375rem;
+}
+.w-48 {
+  width: 12rem;
+}
+.p-2 {
+  padding: 0.5rem;
+}
+.text-gray-900 {
+  color: #1a202c;
+}
+.hover\:bg-gray-100:hover {
+  background-color: #f7fafc;
+}
+.text-red-600 {
+  color: #e53e3e;
+}
+.bg-gray-800 {
+  background-color: rgba(31, 41, 55, 0.8);
+}
+.bg-opacity-50 {
+  background-opacity: 0.5;
+}
+.p-6 {
+  padding: 1.5rem;
+}
+.text-center {
+  text-align: center;
+}
+.w-80 {
+  width: 20rem;
+}
+.mb-4 {
+  margin-bottom: 1rem;
+}
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+.hover\:underline:hover {
+  text-decoration: underline;
+}
+.font-bold {
+  font-weight: bold;
+}
+.rounded {
+  border-radius: 0.25rem;
+}
+.hover\:bg-cyan-500:hover {
+  background-color: #22d3ee;
+}
+.hover\:bg-blue-700:hover {
+  background-color: #1d4ed8;
+}
+.bg-blue-500 {
+  background-color: #3b82f6;
+}
+.bg-blue-700 {
+  background-color: #1e40af;
+}
+.bg-blue-400 {
+  background-color: #60a5fa;
+} 
+.bg-red-500 {
+  background-color: #ef4444;
+}
+.hover\:bg-red-700:hover {
+  background-color: #b91c1c;
 }
 </style>
