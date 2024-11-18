@@ -89,7 +89,6 @@
         </button>
       </div>
     </div>
-  </div>
 
     <!-- Mobile Menu (toggle) -->
     <div v-if="isMenuOpen" class="absolute top-12 left-0 w-full bg-blue-500 p-4 sm:hidden">
@@ -151,7 +150,6 @@ import { useRouter } from 'vue-router';
 import { AuthService } from '@/services/authService';
 import dropdown from '@/components/dropdown.vue';
 import Darkmode from '@/components/Darkmode.vue';
-import { AuthService } from '../services/authService';
 import register1 from '@/components/register1.vue';
 
 const showLoginModal = ref(false);

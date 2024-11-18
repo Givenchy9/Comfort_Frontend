@@ -86,7 +86,7 @@ const router = createRouter({
       name: 'HuisToevoegen',
       components: {
         default: () => import('../views/huis-toevoegen.vue'),
-        header: Header,
+        //header: Header,
       }
     },
 
