@@ -130,7 +130,7 @@ function uncheckAll() {
   filters.value = filters.value.map(() => false);
 }
 
-// Go to property detail page
+/// Go to property detail page
 function goToPropertyDetail(id) {
   router.push({ name: 'PropertyDetail', params: { id } });
 }
