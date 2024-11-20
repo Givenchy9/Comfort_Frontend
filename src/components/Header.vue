@@ -133,7 +133,7 @@
     </div>
 
     <!-- Logout Success Message -->
-    <div v-if="logoutMessage" class="fixed top-16 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white p-3 rounded">
+    <div v-if="logoutMessage" class="mb-4 text-sm rounded-xl bg-red-100 border-t border-red-500 font-normal w-1/3 m-auto text-center" style="z-index: 1000;">
       {{ logoutMessage }}
     </div>
 
@@ -227,20 +227,27 @@ const login = async () => {
   isSubmitting.value = true; // Disable button while submitting
 
   try {
-    // Assuming you call an API to verify login and get the token
+    // Call your backend login API
     const response = await AuthService.login({ email: email.value, password: password.value });
-    localStorage.setItem('token', response.data.token);
-    localStorage.setItem('userEmail', email.value);  // Store email as well
+    const { token, user } = response.data;
+
+    // Store the token and user information in localStorage
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
 
     isLoggedIn.value = true;
-    showLoginModal.value = false;  // Close the login modal
+    showLoginModal.value = false; // Close the login modal
     loginMessage.value = 'Login successful!';
     setTimeout(() => {
       loginMessage.value = '';
     }, 3000);
 
-    router.push('/'); // Optionally redirect after successful login
-
+    // Redirect based on role
+    if (user.role === 'admin') {
+      router.push('/admin'); // Redirect to admin page
+    } else {
+      router.push('/'); // Redirect to home page for other users
+    }
   } catch (err) {
     error.value = err.response?.data?.message || 'Incorrect email or password.';
   } finally {
@@ -248,18 +255,21 @@ const login = async () => {
   }
 };
 
+
 // Logout Functionality
 const logoutConfirmed = () => {
   localStorage.removeItem('token');
-  localStorage.removeItem('userEmail'); // Optionally remove user email from localStorage
+  localStorage.removeItem('userEmail');
   isLoggedIn.value = false;
   showLogoutConfirm.value = false;
   logoutMessage.value = 'Logged out successfully!';
+  console.log(logoutMessage.value); // Debugging
   setTimeout(() => {
     logoutMessage.value = '';
   }, 3000);
-  router.push('/'); // Redirect after logout
+  router.push('/');
 };
+
 
 const cancelNavigation = () => {
   showConfirm.value = false;
