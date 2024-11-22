@@ -5,14 +5,14 @@
         <div class="grid grid-col-2 gap-2">
           <h1 class="text-gray-700 text-center text-2xl py-2 dark:text-white">Settings</h1>
           <RouterLink
-            to="/Profile"
+            to="/settings/profile"
             active-class="text-white"
             class="py-2 px-4 rounded-full bg-gray-200 font-bold text-center hover:bg-black/40 dark:bg-gray-400 duration-200 hover:text-white"
           >
             Profile</RouterLink
           >
           <RouterLink
-            to="/update_account"
+            to="/settings/update_account"
             active-class="text-white"
             class="py-2 px-4 rounded-full bg-gray-200 font-bold text-center hover:bg-black/40 dark:bg-gray-400 duration-200 hover:text-white"
           >
@@ -20,7 +20,7 @@
           >
 
           <RouterLink
-            to="/become_complete"
+            to="/settings/become_complete"
             active-class="text-white"
             class="py-2 px-4 rounded-full bg-gray-200 font-bold text-center hover:bg-black/40 dark:bg-gray-400 duration-200 hover:text-white"
           >

@@ -1,148 +1,152 @@
 <template>
-    <div class="settings-container">
-    <h2>Settings</h2>
-    
-    <!-- Username Section -->
-    <div class="form-group">
-    <label for="username">Username</label>
-    <input
-    type="text"
-    id="username"
-    v-model="username"
-    placeholder="Enter your new username"
-    />
+    <!-- Card start -->
+    <div class="max-w-sm mx-auto mt-28 bg-white dark:bg-gray-900 rounded-lg overflow-hidden shadow-lg">
+      <div class="border-b px-4 pb-6">
+        <div class="text-center my-4">
+          <!-- Avatar image -->
+          <img class="h-32 w-32 rounded-full border-4 bg-blue-500 border-white dark:border-gray-800 mx-auto my-4"
+               :src="user.avatar" alt="User Avatar">
+          <div class="py-2">
+            <!-- Display User Name -->
+            <h3 class="font-bold text-2xl text-gray-800 dark:text-white mb-1">{{ user.first_name }} {{ user.last_name }}</h3>
+            <div class="inline-flex text-gray-700 dark:text-gray-300 items-center">
+              <svg class="h-5 w-5 text-gray-400 dark:text-gray-600 mr-1" fill="currentColor"
+                   xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                <path d="M5.64 16.36a9 9 0 1 1 12.72 0l-5.65 5.66a1 1 0 0 1-1.42 0l-5.65-5.66zm11.31-1.41a7 7 0 1 0-9.9 0L12 19.9l4.95-4.95zM12 14a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
+              </svg>
+              <!-- Display User Email -->
+              {{ user.email }}
+            </div>
+          </div>
+        </div>
+  
+        <!-- Edit Form -->
+        <div v-if="isEditing" class="mt-6">
+          <form @submit.prevent="updateUser">
+            <div class="mb-4">
+              <label for="first_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">First Name</label>
+              <input type="text" id="first_name" v-model="user.first_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white" required />
+            </div>
+            <div class="mb-4">
+              <label for="last_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Last Name</label>
+              <input type="text" id="last_name" v-model="user.last_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white" required />
+            </div>
+            <div class="mb-4">
+              <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+              <input type="email" id="email" v-model="user.email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white" required />
+            </div>
+            <div class="flex gap-2">
+              <button type="submit" class="flex-1 rounded-full bg-blue-600 dark:bg-blue-800 text-white dark:text-white antialiased font-bold hover:bg-blue-800 dark:hover:bg-blue-900 px-4 py-2">
+                Save Changes
+              </button>
+              <button @click="cancelEdit" type="button" class="flex-1 rounded-full border-2 border-gray-400 dark:border-gray-700 font-semibold text-black dark:text-white px-4 py-2">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+  
+        <!-- View Mode -->
+        <div v-else>
+          <div class="flex gap-2 px-2 mt-6">
+            <button @click="startEditing"
+              class="flex-1 rounded-full bg-blue-600 dark:bg-blue-800 text-white dark:text-white antialiased font-bold hover:bg-blue-800 dark:hover:bg-blue-900 px-4 py-2">
+              Edit Profile
+            </button>
+          </div>
+        </div>
+  
+        <!-- Error or Success Message -->
+        <div v-if="error" class="text-red-500 text-center mt-4">{{ error }}</div>
+        <div v-if="successMessage" class="text-green-500 text-center mt-4">{{ successMessage }}</div>
+  
+      </div>
     </div>
-    
-    <!-- Email Section -->
-    <div class="form-group">
-    <label for="email">Email</label>
-    <input
-    type="email"
-    id="email"
-    v-model="email"
-    placeholder="Enter your new email"
-    />
-    </div>
-    
-    <!-- Password Section -->
-    <div class="form-group">
-    <label for="password">Password</label>
-    <input
-    type="password"
-    id="password"
-    v-model="password"
-    placeholder="Enter your new password"
-    />
-    </div>
-    
-    <!-- Save Button -->
-    <button @click="saveSettings" class="save-btn">Save Changes</button>
-    
-    <!-- Success/Error Message -->
-    <div v-if="message" :class="messageClass" class="message">
-    {{ message }}
-    </div>
-    </div>
-    </template>
-    
-    <script>
-    export default {
+    <!-- Card end -->
+  </template>
+  
+  <script>
+  import axios from 'axios';
+  
+  export default {
     data() {
-    return {
-    username: '', // Default username
-    email: '', // Default email
-    password: '', // Default password
-    message: '', // Message to show success or error
-    messageClass: '', // Class to style the message
-    };
+      return {
+        user: { // Default user object, will be updated with actual user data
+          first_name: "John",
+          last_name: "Doe",
+          email: "john.doe@example.com",
+          avatar: "https://via.placeholder.com/150", // Placeholder image
+        },
+        loading: false,
+        error: null,
+        successMessage: "",
+        isEditing: false, // Tracks whether the user is in editing mode
+      };
     },
     methods: {
-    // Method to handle saving the settings
-    saveSettings() {
-    // Simple validation
-    if (!this.username || !this.email || !this.password) {
-    this.setMessage('All fields are required!', 'error');
-    return;
-    }
-    
-    // Here you would send the data to the server for updating (via an API call, for example)
-    // This is just an example, replace with real logic.
-    
-    this.setMessage('Your settings have been successfully updated!', 'success');
+      // Fetch user data by ID (logged-in user ID)
+      async fetchUserById(userId) {
+        this.loading = true;
+        this.error = null;
+        try {
+          const response = await axios.get(`http://127.0.0.1:8000/api/userinfo/${userId}`);
+          this.user = response.data; // Assume API returns user object directly
+        } catch (err) {
+          this.error = "Failed to fetch user.";
+        } finally {
+          this.loading = false;
+        }
+      },
+      
+      // Enable editing mode
+      startEditing() {
+        this.isEditing = true;
+      },
+  
+      // Cancel editing mode without saving
+      cancelEdit() {
+        this.isEditing = false;
+      },
+  
+      // Method to update the user's name and email
+      async updateUser() {
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+          this.error = "User is not logged in.";
+          return;
+        }
+  
+        this.loading = true;
+        this.error = null;
+        this.successMessage = "";
+  
+        try {
+          // Send PUT request to update user data
+          const response = await axios.put(`http://127.0.0.1:8000/api/edituser/${userId}`, {
+            first_name: this.user.first_name,
+            last_name: this.user.last_name,
+            email: this.user.email,
+          });
+          
+          this.user = response.data; // Update user object with response data
+          this.isEditing = false; // Exit edit mode
+          this.successMessage = "Profile updated successfully!";
+        } catch (err) {
+          this.error = "Failed to update user.";
+        } finally {
+          this.loading = false;
+        }
+      },
     },
-    
-    // Helper function to set the message and its style
-    setMessage(message, type) {
-    this.message = message;
-    this.messageClass = type === 'success' ? 'success-message' : 'error-message';
+    mounted() {
+      // Get logged-in user's ID from localStorage
+      const userId = localStorage.getItem("userId");
+      if (userId) {
+        this.fetchUserById(userId); // Fetch user data based on the stored user ID
+      } else {
+        this.error = "User is not logged in.";
+      }
     },
-    },
-    };
-    </script>
-    
-    <style scoped>
-    /* Add some styles to make the form look nice */
-    
-    .settings-container {
-    width: 400px;
-    margin: 0 auto;
-    margin-top: 100px;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
-    }
-    
-    h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    }
-    
-    .form-group {
-    margin-bottom: 15px;
-    }
-    
-    label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-    }
-    
-    input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    }
-    
-    button.save-btn {
-    width: 100%;
-    padding: 12px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    }
-    
-    button.save-btn:hover {
-    background-color: #45a049;
-    }
-    
-    .message {
-    margin-top: 15px;
-    text-align: center;
-    padding: 10px;
-    border-radius: 5px;
-    }
-    
-    .success-message {
-    background-color: #d4edda;
-    color: #155724;
-    }
-    
-    .error-message {
-    background-color: #f8d7da;
-    color: #721c24;
-    }
-    </style>
+  };
+  </script>
+  

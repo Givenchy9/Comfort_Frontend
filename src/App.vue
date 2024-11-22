@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { RouterLink, RouterView, useRoute } from 'vue-router';
-import { computed } from 'vue';
-import Header from '@/components/Header.vue';
-import Footer from '@/components/Footer.vue';
+import { computed } from 'vue'; // For computed properties
+import { useRoute } from 'vue-router'; // Import useRoute from vue-router
+import Header from '@/components/Header.vue'; // Import the Header component
+import Footer from '@/components/Footer.vue'; // Import the Footer component
 
+// Access the current route
 const route = useRoute();
 
 // Check if the current route is either login or new-page
@@ -11,7 +12,7 @@ const isLoginPage = computed(() => route.path === '/login');
 const isNewPage = computed(() => route.path === '/register');
 const isAdminPage = computed(() => route.path === '/admin');
 
-// Log the current route for debugging
+// Log the current route for debugging (optional)
 console.log("Current route:", route.path);
 console.log("Is Login Page:", isLoginPage.value);
 console.log("Is New Page:", isNewPage.value);
@@ -19,11 +20,15 @@ console.log("Is Admin Page:", isAdminPage.value);
 </script>
 
 <template>
-  <!-- Only show the Header if not on the login page or the new page -->
-  <Header v-if="!isLoginPage && !isNewPage && !isAdminPage" />
-  <RouterView />
-  <Footer />
+  <div>
+    <!-- Only show the Header if not on the login page or the new page -->
+    <Header v-if="!isLoginPage && !isNewPage && !isAdminPage" />
+    <RouterView />
+    <Footer />
+  </div>
 </template>
+
+
 
 <style scoped>
 header {

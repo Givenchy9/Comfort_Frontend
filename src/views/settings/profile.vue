@@ -12,8 +12,7 @@
           <div class="inline-flex text-gray-700 dark:text-gray-300 items-center">
             <svg class="h-5 w-5 text-gray-400 dark:text-gray-600 mr-1" fill="currentColor"
                  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-              <path class=""
-                    d="M5.64 16.36a9 9 0 1 1 12.72 0l-5.65 5.66a1 1 0 0 1-1.42 0l-5.65-5.66zm11.31-1.41a7 7 0 1 0-9.9 0L12 19.9l4.95-4.95zM12 14a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
+              <path d="M5.64 16.36a9 9 0 1 1 12.72 0l-5.65 5.66a1 1 0 0 1-1.42 0l-5.65-5.66zm11.31-1.41a7 7 0 1 0-9.9 0L12 19.9l4.95-4.95zM12 14a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
             </svg>
             <!-- Display User Email -->
             {{ user.email }}
@@ -34,7 +33,10 @@
   </div>
   <!-- Card end -->
 </template>
+
 <script>
+import axios from 'axios'; // Ensure axios is imported
+
 export default {
   data() {
     return {
@@ -44,18 +46,8 @@ export default {
         email: "john.doe@example.com",
         avatar: "https://via.placeholder.com/150", // Placeholder image
       },
-      users: [],
       loading: false,
       error: null,
-      successMessage: "",
-      newUser: {
-        first_name: "",
-        last_name: "",
-        email: "",
-        password: "",
-      },
-      editingUser: null,
-      showAddUserForm: false,
     };
   },
   methods: {
@@ -66,16 +58,18 @@ export default {
       try {
         const response = await axios.get(`http://127.0.0.1:8000/api/userinfo/${userId}`);
         this.user = response.data; // Assume API returns user object directly
+        console.log("Fetched user data:", this.user); // Log the fetched data
       } catch (err) {
         this.error = "Failed to fetch user.";
+        console.error(err); // Log the error
       } finally {
         this.loading = false;
       }
     },
   },
   mounted() {
-    // Assuming user ID is stored in localStorage after login
-    const userId = localStorage.getItem("userId"); // Get logged-in user's ID from localStorage
+    // Get logged-in user's ID from localStorage
+    const userId = localStorage.getItem("userId");
     if (userId) {
       this.fetchUserById(userId); // Fetch user data based on the stored user ID
     } else {

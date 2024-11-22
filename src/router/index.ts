@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import PropertyDetail from "../views/PropertyDetail.vue";
 
+
 // Middleware to check for admin role
 function isAdmin(to: any, from: any) {
   const user = JSON.parse(localStorage.getItem('user') || '{}');

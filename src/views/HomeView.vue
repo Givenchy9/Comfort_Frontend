@@ -303,14 +303,12 @@ const handleLogout = async () => {
 
 .news-item img {
   width: 100%;
-  height: 250px;
   object-fit: cover;
   border-radius: 8px;
 }
 
 .editor-textarea {
   width: 100%;
-  height: 150px;
   resize: none;
 }
 </style>

@@ -1,10 +1,9 @@
-<template>
+<!-- <template>
     <div class="p-8">
     <h1 class="text-3xl font-bold text-blue-600 mb-6">
     {{ isAdmin ? 'Beheer Inkomende Verzoeken' : 'Voeg Een Huis Toe' }}
     </h1>
     
-    <!-- Admin Interface: Lijst van inkomende verzoeken -->
     <div v-if="isAdmin">
     <div v-if="requests.length === 0" class="text-gray-500">Geen inkomende verzoeken gevonden.</div>
     <div v-for="(request, index) in requests" :key="request.id" class="mb-6 border-b border-gray-200 pb-4">
@@ -21,7 +20,7 @@
     </button>
     </div>
     
-    <!-- Dropdown Details voor Admin -->
+    
     <transition name="fade">
     <div v-if="request.showDetails" class="mt-4 bg-gray-100 p-4 rounded-md">
     <p><strong>Beschrijving:</strong> {{ request.description }}</p>
@@ -40,7 +39,7 @@
     </div>
     </div>
     
-    <!-- User Form: Toevoegen van een Huis -->
+    
     <div v-else>
     <form @submit.prevent="submitHouse" class="space-y-4">
     <div>
@@ -140,4 +139,5 @@
     opacity: 0;
     }
     </style>
-    
+     -->
+    <template></template>
