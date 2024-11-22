@@ -4,17 +4,18 @@
       <div class="fixed top-0 left-0 right-0 bg-red-500 grid grid-cols-3 py-2 border-2 border-black items-center justify-items-center px-4 z-10">
         <!-- Left Section: Logo and Dropdown -->
         <div class="flex items-center justify-center lg:justify-start">
-          <router-link to="/" class="inline-block mr-2">
+          <router-link class="inline-block mr-2">
             <img src="/favicon.ico" alt="favicon" class="w-6 h-6" />
           </router-link>
-          <dropdown2 class="hidden sm:inline-block" />
+          <!-- <dropdown2 class="hidden sm:inline-block" />
           <button class="block sm:hidden" @click="toggleMenu">
             <i class="fa-solid fa-bars fa-xl text-white"></i>
-          </button>
+          </button> -->
         </div>
   
         <!-- Center Section: Search Bar -->
-        <div class="flex items-center justify-center w-full"></div>
+        <div class="flex items-center justify-center w-full"><RouterLink to="users" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-l">Users</RouterLink>
+          <RouterLink to="AdminHuizen" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r">Huizen</RouterLink></div>
   
         <!-- Right Section: Darkmode and Buttons -->
         <div class="flex items-center justify-center lg:justify-end">
