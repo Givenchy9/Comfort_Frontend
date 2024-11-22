@@ -13,8 +13,10 @@
         </button>
       </div>
 
-      <!-- Middle section (if needed for spacing, can be empty) -->
-      <div></div>
+      <!-- Center Section: Search Bar -->
+      <div class="flex items-center justify-center w-full">
+        <!-- <input type="text" placeholder="Search..." class="block w-2/3 rounded-md border-0 py-1.5 px-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 hidden sm:block" /> -->
+      </div>
 
       <!-- Right Section: Darkmode and Buttons -->
       <div class="flex items-center justify-end space-x-4">
@@ -25,18 +27,20 @@
         <button v-else @click="toggleLoginModal" class="bg-blue-400 hover:bg-cyan-500 text-white font-bold py-1 px-4 rounded">
           <p>Login</p>
         </button>
-        <div class="relative inline-block text-left">
-          <!-- Dropdown Button -->
-          <button @click="toggleDropdown" class="hover:text-gray-600">
-            <i class="fa-solid fa-gear fa-xl"></i>/<i class="fa-solid fa-user fa-xl"></i>
-          </button>
+        <!-- User Profiling Button -->
+        <button @click="toggleDropdown" class="pl-4 hover:text-gray-600">
+          <i class="fa-solid fa-user fa-xl"></i>
+        </button>
 
-          <!-- Dropdown Menu -->
-          <div v-if="dropdownVisible" class="dropdown-menu absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md py-1">
-            <a href="#" @click="confirmNavigation('/settings')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Instellingen</a>
-            <a href="#" @click="confirmNavigation('/profile')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profiel</a>
-          </div>
+        <!-- Dropdown Menu for User Profile -->
+        <div v-if="dropdownVisible" class="absolute top-12 right-0 bg-white shadow-lg rounded-md w-48 p-2 z-20">
+        <!-- <router-link to="/profile" class="block p-2 text-gray-900 hover:bg-gray-100">Profile</router-link> -->
+        <router-link to="/settings" class="block p-2 text-gray-900 hover:bg-gray-100">Settings</router-link>
+        <!-- <button @click="confirmLogout" class="block w-full p-2 text-red-600 hover:bg-gray-100">Logout</button> -->
         </div>
+        <!-- <button @click="confirmNavigation('/settings')" class="hover:text-gray-600">
+          <i class="fa-solid fa-gear fa-xl"></i>/<i class="fa-solid fa-user fa-xl"></i>
+        </button> -->
       </div>
     </div>
 
@@ -139,7 +143,7 @@
     </div>
 
     <!-- Logout Success Message -->
-    <div v-if="logoutMessage" class="fixed top-16 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white p-3 rounded">
+    <div v-if="logoutMessage" class="mb-4 text-sm rounded-xl bg-red-100 border-t border-red-500 font-normal w-1/3 m-auto text-center" style="z-index: 1000;">
       {{ logoutMessage }}
     </div>
 
@@ -165,6 +169,7 @@ const showConfirm = ref(false);
 const showLogoutConfirm = ref(false);
 const targetRoute = ref(null);
 const router = useRouter();
+const dropdownVisible = ref(false);
 const isMenuOpen = ref(false);
 const isLoggedIn = ref(false);
 const dropdownVisible = ref(false);
@@ -189,6 +194,11 @@ onMounted(() => {
   const token = localStorage.getItem('token');
   isLoggedIn.value = !!token;
 });
+
+// Toggle Dropdown Visibility
+const toggleDropdown = () => {
+  dropdownVisible.value = !dropdownVisible.value;
+};
 
 // Modal Toggle Functions
 const toggleLoginModal = () => {
@@ -238,20 +248,27 @@ const login = async () => {
   isSubmitting.value = true; // Disable button while submitting
 
   try {
-    // Assuming you call an API to verify login and get the token
+    // Call your backend login API
     const response = await AuthService.login({ email: email.value, password: password.value });
-    localStorage.setItem('token', response.data.token);
-    localStorage.setItem('userEmail', email.value);  // Store email as well
+    const { token, user } = response.data;
+
+    // Store the token and user information in localStorage
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
 
     isLoggedIn.value = true;
-    showLoginModal.value = false;  // Close the login modal
+    showLoginModal.value = false; // Close the login modal
     loginMessage.value = 'Login successful!';
     setTimeout(() => {
       loginMessage.value = '';
     }, 3000);
 
-    router.push('/'); // Optionally redirect after successful login
-
+    // Redirect based on role
+    if (user.role === 'admin') {
+      router.push('/admin'); // Redirect to admin page
+    } else {
+      router.push('/'); // Redirect to home page for other users
+    }
   } catch (err) {
     error.value = err.response?.data?.message || 'Incorrect email or password.';
   } finally {
@@ -263,15 +280,17 @@ const login = async () => {
 // Logout Functionality
 const logoutConfirmed = () => {
   localStorage.removeItem('token');
-  localStorage.removeItem('userEmail'); // Optionally remove user email from localStorage
+  localStorage.removeItem('userEmail');
   isLoggedIn.value = false;
   showLogoutConfirm.value = false;
   logoutMessage.value = 'Logged out successfully!';
+  console.log(logoutMessage.value); // Debugging
   setTimeout(() => {
     logoutMessage.value = '';
   }, 3000);
-  router.push('/'); // Redirect after logout
+  router.push('/');
 };
+
 
 const cancelNavigation = () => {
   showConfirm.value = false;
