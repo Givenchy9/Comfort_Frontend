@@ -51,23 +51,19 @@ const router = createRouter({
       beforeEnter: isAdmin, // Protect the route
     },
     {
-      path: '/adminhuizen',
-      name: 'adminhuizen',
-      components: {  
-        default: () => import('../views/AdminHuizen.vue'),
-      },
-    },
-    {
-      path: '/users',
-      name: 'users',
-      components: {  
-        default: () => import('../views/users.vue'),
-      },
-    },
-    {
       path: '/huizen',
       name: 'Huizen',
       component: () => import('@/views/Huizen.vue'),
+    },
+    {
+      path: '/huizen_toevoegen',
+      name: 'huizen_toevoegen',
+      component: () => import('@/views/huizen_toevoegen.vue'),
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: () => import('@/views/settings.vue'),
     },
     {
       path: '/property/:id', 
@@ -75,6 +71,45 @@ const router = createRouter({
       component: PropertyDetail, 
       props: true,
     },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: () => import('../views/settings.vue'),
+      children: [
+        {
+          path: '/update_account',
+          name: 'update_account',
+          component: () => import('../views/settings/update_account.vue')
+        },
+        {
+          path: '/profile',
+          name: 'profile',
+          component: () => import('../views/settings/profile.vue')
+        },
+        {
+          path: '/become_complete',
+          name: 'become_complete',
+          component: () => import('../views/settings/become_complete.vue')
+        }
+      ]
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('../views/admin.vue'),
+      children: [
+        {
+          path: '/users',
+          name: 'users',
+          component: () => import('../views/admin/users.vue')
+        },
+        {
+          path: '/AdminHuizen',
+          name: 'AdminHuizen',
+          component: () => import('../views/admin/AdminHuizen.vue')
+        },
+      ]
+    }
   ]
 });
 
