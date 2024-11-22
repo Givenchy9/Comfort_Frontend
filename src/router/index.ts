@@ -89,8 +89,7 @@ const router = createRouter({
         //header: Header,
       }
     },
-
-  ]
+   ]
 });
 
 // Global Navigation Guard
