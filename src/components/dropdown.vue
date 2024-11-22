@@ -26,7 +26,7 @@
                         </RouterLink>
                     </MenuItem>
                     <MenuItem v-slot="{ active }">
-                        <RouterLink to="/huis-toevoegen"
+                        <RouterLink to="/huizen_toevoegen"
                             :class="[route.path === '/huis-toevoegen' ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
                             Huis Toevoegen?
                         </RouterLink>

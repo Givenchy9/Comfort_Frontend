@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container">
+  <div class="page-container w-full">
     <!-- Main content of the page -->
     <div class="content">
       <!-- Pagina inhoud hier -->
@@ -55,7 +55,9 @@ const saveNewsItems = () => {
 .page-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Full height of the viewport */
+  bottom: 0;
+  position: fixed;
+   left: 0;
 }
 
 /* Ensures the content grows to take the available space */

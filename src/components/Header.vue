@@ -169,7 +169,6 @@ const showConfirm = ref(false);
 const showLogoutConfirm = ref(false);
 const targetRoute = ref(null);
 const router = useRouter();
-const dropdownVisible = ref(false);
 const isMenuOpen = ref(false);
 const isLoggedIn = ref(false);
 const dropdownVisible = ref(false);
@@ -193,6 +192,10 @@ const isSubmitting = ref(false);  // Button submitting state
 onMounted(() => {
   const token = localStorage.getItem('token');
   isLoggedIn.value = !!token;
+
+  if (isLoggedIn.value) {
+    fetchUserProfile(); // Fetch the user profile if logged in
+  }
 });
 
 // Toggle Dropdown Visibility
@@ -211,10 +214,6 @@ const toggleRegisterModal = () => {
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
-};
-
-const toggleDropdown = () => {
-  dropdownVisible.value = !dropdownVisible.value;
 };
 
 const confirmNavigation = (route) => {
@@ -252,10 +251,15 @@ const login = async () => {
     const response = await AuthService.login({ email: email.value, password: password.value });
     const { token, user } = response.data;
 
-    // Store the token and user information in localStorage
+    // Store the token, user information, and user ID in localStorage
     localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('user', JSON.stringify(user)); // Store entire user object (including ID)
+    localStorage.setItem('userId', user.id); // Store only user ID
 
+    // Log the token and user ID to the console
+    console.log("User Token:", token);
+    console.log("User ID:", user.id);
+    
     isLoggedIn.value = true;
     showLoginModal.value = false; // Close the login modal
     loginMessage.value = 'Login successful!';
@@ -273,6 +277,25 @@ const login = async () => {
     error.value = err.response?.data?.message || 'Incorrect email or password.';
   } finally {
     isSubmitting.value = false; // Enable the button after submission
+  }
+};
+
+const fetchUserProfile = async () => {
+  const userId = localStorage.getItem('userId'); // Retrieve the user ID from localStorage
+  if (!userId) {
+    error.value = 'User ID not found. Please login again.';
+    return;
+  }
+
+  try {
+    const response = await axios.get(`http://127.0.0.1:8000/api/userinfo/${userId}`); // API endpoint to fetch user profile
+    const userProfile = response.data; // Assuming the API returns the user's profile
+    // You can now update your component state with the user profile data
+    console.log('User Profile:', userProfile);
+    // Optionally, you can assign it to the data property for display:
+    // this.user = userProfile;
+  } catch (err) {
+    error.value = 'Failed to fetch user profile. Please try again later.';
   }
 };
 

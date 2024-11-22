@@ -33,9 +33,6 @@
       <router-view></router-view>
     </div>
   </div>
-  <div>
-    <Footer />
-  </div>
 </template>
 
 <script setup>
