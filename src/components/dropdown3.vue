@@ -3,9 +3,9 @@
         <div>
             <!-- Dynamically adjust the button size based on the text content -->
             <MenuButton
-                class="menu-button inline-flex w-full justify-between gap-x-2 rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-inset ring-gray-300 hover:bg-blue-600 dark:text-white dark:bg-gray-900">
+                class="menu-button inline-flex w-full justify-between gap-x-2 rounded-md bg-orange-500 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-inset ring-gray-300 hover:bg-orange-600">
                 {{ buttonText }}
-                <ChevronDownIcon class="-mr-1 h-5 w-5 text-black dark:text-white" aria-hidden="true" />
+                <ChevronDownIcon class="-mr-1 h-5 w-5 text-black" aria-hidden="true" />
             </MenuButton>
         </div>
 
@@ -17,20 +17,20 @@
             leave-from-class="transform opacity-100 scale-100"
             leave-to-class="transform opacity-0 scale-95">
             
-            <MenuItems class="menu-dropdown absolute left-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-blue-500 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <div class="py-1 dark:bg-gray-900">
+            <MenuItems class="menu-dropdown absolute left-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-orange-500 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <div class="py-1">
                     <MenuItem v-slot="{ active }">
-                        <RouterLink to="/huizen2"
-                            :class="[route.path === '/huizen2' ? 'bg-gray-100 text-gray-900' : 'text-gray-700 dark:bg-gray-900 dark:text-white', 'block px-4 py-2 text-sm']">
+                        <RouterLink to="/huizen"
+                            :class="[route.path === '/huizen' ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
                             Huizenmarkt
                         </RouterLink>
                     </MenuItem>
-                    <!-- <MenuItem v-slot="{ active }">
+                    <MenuItem v-slot="{ active }">
                         <RouterLink to="/huizen_toevoegen"
                             :class="[route.path === '/huis-toevoegen' ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
                             Huis Toevoegen?
                         </RouterLink>
-                    </MenuItem> -->
+                    </MenuItem>
                     <!-- <MenuItem v-slot="{ active }">
                         <RouterLink to="/info"
                             :class="[route.path === '/info' ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
@@ -61,7 +61,7 @@ watch(
     (newPath) => {
         if (newPath === '/huizen') {
             buttonText.value = 'Huizenmarkt';
-        } else if (newPath === '/huis-toevoegen') {
+        } else if (newPath === '/huizen_toevoegen') {
             buttonText.value = 'Huis Toevoegen?';
         } else if (newPath === '/info') {
             buttonText.value = 'Info';

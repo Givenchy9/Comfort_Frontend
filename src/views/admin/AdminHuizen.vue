@@ -112,35 +112,34 @@
     </button>
   </div>
 </template>
+
 <script>
 import axios from "axios";
 
 export default {
   data() {
     return {
-      houses: [], // List of houses
-      loading: false, // Loading state
-      error: null, // Error state
-      successMessage: "", // Success message after an action
-      showAddHouseForm: false, // Show or hide the form to add a house
-      isEditingHouse: false, // Check if editing is happening
-      formData: { // Form data for adding/editing a house
-        straatnaam: '',
-        prijs: '',
-        type: 'koop', // Default type (Buy)
-        plaats: ''
+      houses: [],
+      loading: false,
+      error: null,
+      successMessage: "",
+      newHouse: {
+        straatnaam: "",
+        prijs: "",
+        type: "koop",
+        plaats: "",
       },
-      houseId: null, // The ID of the house being edited
+      editingHouse: null,
+      showAddHouseForm: false,
     };
   },
   methods: {
-    // Fetch all houses
     async fetchHouses() {
       this.loading = true;
       this.error = null;
       try {
         const response = await axios.get("http://127.0.0.1:8000/api/huizen");
-        this.houses = response.data || []; // Update houses array with the response data
+        this.houses = response.data || [];
       } catch (err) {
         this.error = "Failed to fetch houses.";
       } finally {
@@ -148,47 +147,15 @@ export default {
       }
     },
 
-    // Show form to add a new house
-    toggleAddHouseForm() {
-      this.showAddHouseForm = !this.showAddHouseForm;
-      if (this.showAddHouseForm) {
-        this.isEditingHouse = false;
-        this.formData = { // Reset form data for adding a new house
-          straatnaam: '',
-          prijs: '',
-          type: 'koop',
-          plaats: ''
-        };
-      }
-    },
-
-    // Show form to edit an existing house
-    editHouse(id) {
-      this.isEditingHouse = true;
-      this.houseId = id;
-      this.getHouseDetails(id);
-    },
-
-    // Fetch details of a specific house for editing
-    async getHouseDetails(id) {
-      try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/huizen/${id}`);
-        this.formData = response.data; // Populate form with the existing house details
-      } catch (err) {
-        this.error = "Failed to fetch house details.";
-      }
-    },
-
-    // Add a new house
     async addHouse() {
       this.loading = true;
       this.error = null;
       try {
-        const response = await axios.post("http://127.0.0.1:8000/api/huizen", this.formData);
-        this.houses.push(response.data.huis); // Add the newly added house to the list
+        const response = await axios.post("http://127.0.0.1:8000/api/huizen", this.newHouse);
+        this.houses.push(response.data.house);
+        this.newHouse = { straatnaam: "", prijs: "", type: "koop", plaats: "" };
+        this.showAddHouseForm = false;
         this.successMessage = "House added successfully!";
-        this.toggleAddHouseForm(); // Hide the add form
-        setTimeout(() => this.successMessage = "", 3000); // Hide success message after 3 seconds
       } catch (err) {
         this.error = "Failed to add house.";
       } finally {
@@ -196,18 +163,24 @@ export default {
       }
     },
 
-    // Update an existing house
-    async updateHouse() {
+    async editHouse() {
       this.loading = true;
       this.error = null;
-      this.successMessage = "";  // Reset success message before making the request
+      this.successMessage = "";
+
+      if (!this.editingHouse.straatnaam || !this.editingHouse.prijs || !this.editingHouse.plaats) {
+        this.error = "Street Name, Price, and Location are required.";
+        this.loading = false;
+        return;
+      }
+
       try {
-        const response = await axios.put(`http://127.0.0.1:8000/api/huizen/${this.houseId}`, this.formData);
-        const index = this.houses.findIndex(house => house.id === this.houseId);
-        this.houses.splice(index, 1, response.data.huis); // Replace the updated house in the list
-        this.isEditingHouse = false; // Hide the edit form
+        const response = await axios.put(`http://127.0.0.1:8000/api/huizen/${this.editingHouse.id}`, this.editingHouse);
+        const index = this.houses.findIndex(house => house.id === this.editingHouse.id);
+        this.houses.splice(index, 1, response.data.house);
+        this.editingHouse = null;
         this.successMessage = "House updated successfully!";
-        setTimeout(() => this.successMessage = "", 3000); // Hide success message after 3 seconds
+        setTimeout(() => { this.successMessage = ""; }, 3000);
       } catch (err) {
         this.error = "Failed to update house.";
       } finally {
@@ -215,16 +188,14 @@ export default {
       }
     },
 
-    // Delete a house
     async deleteHouse(id) {
       this.loading = true;
       this.error = null;
-      this.successMessage = "";  // Reset success message before making the request
+      this.successMessage = "";
       try {
         await axios.delete(`http://127.0.0.1:8000/api/huizen/${id}`);
-        this.houses = this.houses.filter(house => house.id !== id); // Remove the deleted house from the list
+        this.houses = this.houses.filter(house => house.id !== id);
         this.successMessage = "House deleted successfully!";
-        setTimeout(() => this.successMessage = "", 3000); // Hide success message after 3 seconds
       } catch (err) {
         this.error = "Failed to delete house.";
       } finally {
@@ -232,15 +203,17 @@ export default {
       }
     },
 
-    // View house details (optional, depending on your app's needs)
-    viewHouse(id) {
-      console.log("Viewing house with ID:", id); // This can be expanded to show detailed view
+    startEditing(house) {
+      this.editingHouse = { ...house };
     },
   },
-  
-  // Fetch houses when the component is mounted
-  mounted() {
+
+  created() {
     this.fetchHouses();
   },
 };
 </script>
+
+<style scoped>
+/* Add any custom styles if needed */
+</style>

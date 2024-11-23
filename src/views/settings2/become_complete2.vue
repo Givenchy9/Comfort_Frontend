@@ -63,7 +63,7 @@ import register from "@/components/register2.vue"
   
   <script>
   import axios from 'axios';
-  
+  import header3 from '@/components/header3.vue'
   export default {
     data() {
       return {

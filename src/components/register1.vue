@@ -68,7 +68,7 @@
   
       <!-- Terms of Service Modal -->
       <div v-if="showTOS" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-        <div class="bg-white w-3/4 p-8 rounded-lg shadow-lg max-w-lg overflow-y-auto max-h-[75vh]">
+        <div class="bg-white w-3/4 p-8 rounded-lg shadow-lg max-w-lg overflow-y-auto max-h-[75vh] dark:bg-gray-900">
           <h2 class="text-2xl font-bold mb-4">Terms of Service</h2>
           <div class="overflow-y-auto h-[50vh] px-4 py-2">
             <p class="mb-4">

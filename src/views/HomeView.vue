@@ -32,9 +32,9 @@
   </div>
 
   <!-- Editor Mode Button -->
-  <button @click="toggleEditorMode" :class="['editor-button', { 'editor-active': isEditing }]">
+  <!-- <button @click="toggleEditorMode" :class="['editor-button', { 'editor-active': isEditing }]">
     {{ isEditing ? 'Exit Editor Mode (ONLY FOR ADMIN)' : 'Enter Editor Mode (ONLY FOR ADMIN)' }}
-  </button>
+  </button> -->
   <!-- Logout Button -->
   <!-- <button @click="handleLogout" class="logout-button">
     Logout

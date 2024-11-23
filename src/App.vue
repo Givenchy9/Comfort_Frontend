@@ -11,18 +11,28 @@ const route = useRoute();
 const isLoginPage = computed(() => route.path === '/login');
 const isNewPage = computed(() => route.path === '/register');
 const isAdminPage = computed(() => route.path === '/admin');
+const isCompletePage = computed(() => route.path === '/complete');
+const isToevoegenPage = computed(() => route.path === '/huizen_toevoegen');
+const isHuizenPage = computed(() => route.path === '/huizen');
+const isSettingsPage = computed(() => route.path === '/settings2');
+const isUpdatePage = computed(() => route.path === '/update_account2');
+const isProfilePage = computed(() => route.path === '/profile2');
+const isBecomePage = computed(() => route.path === '/become_complete2');
 
 // Log the current route for debugging (optional)
 console.log("Current route:", route.path);
 console.log("Is Login Page:", isLoginPage.value);
 console.log("Is New Page:", isNewPage.value);
 console.log("Is Admin Page:", isAdminPage.value);
+console.log("Is Complete Page:", isCompletePage.value);
+console.log("Is Toevoegen Page:", isToevoegenPage.value);
+console.log("Is Toevoegen Page:", isHuizenPage.value);
 </script>
 
 <template>
   <div>
     <!-- Only show the Header if not on the login page or the new page -->
-    <Header v-if="!isLoginPage && !isNewPage && !isAdminPage" />
+    <Header v-if="!isLoginPage && !isNewPage && !isAdminPage && !isCompletePage && !isToevoegenPage && !isSettingsPage && !isUpdatePage && !isProfilePage && !isBecomePage" />
     <RouterView />
     <Footer />
   </div>

@@ -1,8 +1,6 @@
 <template>
   <div>
-    <!-- Fixed Header -->
-    <div class="fixed top-0 left-0 right-0 bg-blue-500 grid grid-cols-3 py-2 border-2 border-black items-center px-4 z-10">
-      <!-- Left Section: Logo and Dropdown -->
+    <div class="fixed top-0 left-0 right-0 bg-blue-500 grid grid-cols-3 py-2 items-center px-4 z-10 dark:bg-gray-800">
       <div class="flex items-center justify-start">
         <router-link to="/" class="inline-block mr-2">
           <img src="/favicon.ico" alt="favicon" class="w-6 h-6" />
@@ -15,44 +13,32 @@
 
       <!-- Center Section: Search Bar -->
       <div class="flex items-center justify-center w-full">
-        <!-- <input type="text" placeholder="Search..." class="block w-2/3 rounded-md border-0 py-1.5 px-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 hidden sm:block" /> -->
+        <Darkmode class="darkmode hidden sm:inline-block w-80 dark:bg-gray-900" />
       </div>
 
-      <!-- Right Section: Darkmode and Buttons -->
-      <div class="flex items-center justify-end space-x-4">
-        <Darkmode class="hidden sm:inline-block" />
-        <button v-if="isLoggedIn" @click="confirmLogout" class="bg-blue-700 hover:bg-cyan-500 text-white font-bold py-1 px-4 rounded">
+      <div class="flex items-center justify-end space-x-1">
+        <button v-if="isLoggedIn" @click="confirmLogout" class="bg-blue-700 hover:bg-cyan-500 text-white font-bold w-40 py-1 px-4 rounded dark:bg-gray-900">
           <p>Logout</p>
         </button>
-        <button v-else @click="toggleLoginModal" class="bg-blue-400 hover:bg-cyan-500 text-white font-bold py-1 px-4 rounded">
+        <button v-else @click="toggleLoginModal" class="bg-blue-400 hover:bg-cyan-500 text-white font-bold w-40 py-1 px-4 rounded dark:bg-gray-900">
           <p>Login</p>
         </button>
-        <!-- User Profiling Button -->
-        <button @click="toggleDropdown" class="pl-4 hover:text-gray-600">
+        <button @click="toggleDropdown" class="hover:text-gray-600 bg-blue-400 hover:bg-cyan-500 text-white font-bold w-22 py-1 px-8 rounded dark:bg-gray-900 dark-hover:text-black">
           <i class="fa-solid fa-user fa-xl"></i>
         </button>
 
-        <!-- Dropdown Menu for User Profile -->
         <div v-if="dropdownVisible" class="absolute top-12 right-0 bg-white shadow-lg rounded-md w-48 p-2 z-20">
-        <!-- <router-link to="/profile" class="block p-2 text-gray-900 hover:bg-gray-100">Profile</router-link> -->
         <router-link to="/settings" class="block p-2 text-gray-900 hover:bg-gray-100">Settings</router-link>
-        <!-- <button @click="confirmLogout" class="block w-full p-2 text-red-600 hover:bg-gray-100">Logout</button> -->
         </div>
-        <!-- <button @click="confirmNavigation('/settings')" class="hover:text-gray-600">
-          <i class="fa-solid fa-gear fa-xl"></i>/<i class="fa-solid fa-user fa-xl"></i>
-        </button> -->
       </div>
     </div>
 
-    <!-- Page Content with Padding to Avoid Overlap with Fixed Header -->
     <div class="pt-16">
-      <!-- Main content of the page goes here -->
     </div>
 
-    <!-- Login Popup Modal -->
     <div v-if="showLoginModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-      <div class="bg-white p-6 rounded shadow-lg text-center w-80">
-        <p class="text-lg font-bold mb-4">Login to Your Account</p>
+      <div class="bg-white p-6 rounded shadow-lg text-center w-80 dark:bg-gray-900 dark:border-white border-2">
+        <p class="text-lg font-bold mb-4 dark:text-white">Login to Your Account</p>
         <input
           type="email"
           placeholder="Email"
@@ -90,9 +76,8 @@
       </div>
     </div>
 
-    <!-- Registration Popup Modal -->
     <div v-if="showRegisterModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-      <div class="bg-white p-6 rounded shadow-lg text-center w-80">
+      <div class="bg-white p-6 rounded shadow-lg text-center w-80 dark:bg-gray-900 dark:text-white border-2">
         <register1/>
         <button @click="toggleRegisterModal" class="bg-red-500 hover:bg-gray-700 mt-2 text-white font-bold py-2 px-4 rounded">
           Ga terug naar Login
@@ -100,7 +85,6 @@
       </div>
     </div>
 
-    <!-- Mobile Menu (toggle) -->
     <div v-if="isMenuOpen" class="absolute top-12 left-0 w-full bg-blue-500 p-4 sm:hidden">
       <div class="flex flex-col space-y-2">
         <router-link to="/films" class="text-white" @click="toggleMenu">Films</router-link>
@@ -112,9 +96,8 @@
       </div>
     </div>
 
-    <!-- Confirmation Modal for Navigation -->
     <div v-if="showConfirm" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-      <div class="bg-white p-6 rounded shadow-lg text-center">
+      <div class="bg-white p-6 rounded shadow-lg text-center dark:bg-gray-900">
         <p>Are you sure you want to leave this page?</p>
         <div class="mt-4">
           <button @click="navigateToTarget" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4">
@@ -127,9 +110,8 @@
       </div>
     </div>
 
-    <!-- Confirmation Modal for Logout -->
     <div v-if="showLogoutConfirm" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-      <div class="bg-white p-6 rounded shadow-lg text-center">
+      <div class="bg-white p-6 rounded shadow-lg text-center dark:bg-gray-800 dark:text-white border-2 dark:border-white">
         <p>Are you sure you want to log out?</p>
         <div class="mt-4">
           <button @click="logoutConfirmed" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-4">
@@ -142,12 +124,10 @@
       </div>
     </div>
 
-    <!-- Logout Success Message -->
     <div v-if="logoutMessage" class="mb-4 text-sm rounded-xl bg-red-100 border-t border-red-500 font-normal w-1/3 m-auto text-center" style="z-index: 1000;">
       {{ logoutMessage }}
     </div>
 
-    <!-- Login Success Message -->
     <div v-if="loginMessage" class="fixed top-16 left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-3 rounded">
       {{ loginMessage }}
     </div>
@@ -155,10 +135,10 @@
 </template>
 
 <script setup>
-// Your script remains unchanged, only imports and state management
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import dropdown from '@/components/dropdown.vue';
+import dropdown3 from '@/components/dropdown3.vue';
 import Darkmode from '@/components/Darkmode.vue';
 import { AuthService } from '../services/authService';
 import register1 from '@/components/register1.vue';
@@ -185,25 +165,23 @@ const registerForm = ref({
   password: ''
 });
 
-const emailError = ref(false);  // Email error state
-const passwordError = ref(false);  // Password error state
-const isSubmitting = ref(false);  // Button submitting state
+const emailError = ref(false);  
+const passwordError = ref(false); 
+const isSubmitting = ref(false);  
 
 onMounted(() => {
   const token = localStorage.getItem('token');
   isLoggedIn.value = !!token;
 
   if (isLoggedIn.value) {
-    fetchUserProfile(); // Fetch the user profile if logged in
+    fetchUserProfile(); 
   }
 });
 
-// Toggle Dropdown Visibility
 const toggleDropdown = () => {
   dropdownVisible.value = !dropdownVisible.value;
 };
 
-// Modal Toggle Functions
 const toggleLoginModal = () => {
   showLoginModal.value = !showLoginModal.value;
 };
@@ -226,17 +204,14 @@ const confirmLogout = () => {
 };
 
 const login = async () => {
-  // Reset errors before submission
   emailError.value = false;
   passwordError.value = false;
 
-  // Basic validation
   if (!email.value || !password.value) {
     error.value = 'Please enter both email and password.';
     return;
   }
 
-  // Validate email format
   const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
   if (!emailRegex.test(email.value)) {
     emailError.value = true;
@@ -244,24 +219,26 @@ const login = async () => {
     return;
   }
 
-  isSubmitting.value = true; // Disable button while submitting
+  isSubmitting.value = true; 
 
   try {
-    // Call your backend login API
-    const response = await AuthService.login({ email: email.value, password: password.value });
+    const response = await AuthService.login({
+      email: email.value,
+      password: password.value,
+    });
+
     const { token, user } = response.data;
 
-    // Store the token, user information, and user ID in localStorage
+    // Save user data in localStorage
     localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(user)); // Store entire user object (including ID)
-    localStorage.setItem('userId', user.id); // Store only user ID
+    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('userId', user.id); 
 
-    // Log the token and user ID to the console
     console.log("User Token:", token);
     console.log("User ID:", user.id);
-    
+
     isLoggedIn.value = true;
-    showLoginModal.value = false; // Close the login modal
+    showLoginModal.value = false; 
     loginMessage.value = 'Login successful!';
     setTimeout(() => {
       loginMessage.value = '';
@@ -269,31 +246,43 @@ const login = async () => {
 
     // Redirect based on role
     if (user.role === 'admin') {
-      router.push('/admin'); // Redirect to admin page
+      router.push('/admin'); 
+    } else if (user.role === 'complete') {
+      router.push('/complete');
     } else {
-      router.push('/'); // Redirect to home page for other users
+      router.push('/');
     }
   } catch (err) {
-    error.value = err.response?.data?.message || 'Incorrect email or password.';
+    console.error('Login Error:', err);
+    if (err.response) {
+      // If the server returns a response (401 or other error)
+      if (err.response.status === 401) {
+        error.value = 'Incorrect email or password. Please try again.';
+      } else {
+        error.value = 'An unexpected error occurred. Please try again later.';
+      }
+    } else {
+      // If no response from the server
+      error.value = 'No response from server. Please check your connection.';
+    }
   } finally {
-    isSubmitting.value = false; // Enable the button after submission
+    isSubmitting.value = false;
   }
 };
 
+
+
 const fetchUserProfile = async () => {
-  const userId = localStorage.getItem('userId'); // Retrieve the user ID from localStorage
+  const userId = localStorage.getItem('userId');
   if (!userId) {
     error.value = 'User ID not found. Please login again.';
     return;
   }
 
   try {
-    const response = await axios.get(`http://127.0.0.1:8000/api/userinfo/${userId}`); // API endpoint to fetch user profile
-    const userProfile = response.data; // Assuming the API returns the user's profile
-    // You can now update your component state with the user profile data
+    const response = await axios.get(`http://127.0.0.1:8000/api/userinfo/${userId}`);
+    const userProfile = response.data;
     console.log('User Profile:', userProfile);
-    // Optionally, you can assign it to the data property for display:
-    // this.user = userProfile;
   } catch (err) {
     error.value = 'Failed to fetch user profile. Please try again later.';
   }
@@ -307,7 +296,7 @@ const logoutConfirmed = () => {
   isLoggedIn.value = false;
   showLogoutConfirm.value = false;
   logoutMessage.value = 'Logged out successfully!';
-  console.log(logoutMessage.value); // Debugging
+  console.log(logoutMessage.value);
   setTimeout(() => {
     logoutMessage.value = '';
   }, 3000);
@@ -332,7 +321,6 @@ const navigateToTarget = () => {
 </script>
 
 <style scoped>
-/* Ensures the header is fixed at the top */
 .fixed {
   position: fixed;
   top: 0;
@@ -340,21 +328,18 @@ const navigateToTarget = () => {
   right: 0;
 }
 
-/* Grid layout for header with 3 columns */
 .grid-cols-3 {
   display: grid;
-  grid-template-columns: 1fr auto 1fr; /* Left (logo), Center (empty space), Right (buttons) */
+  grid-template-columns: 1fr auto 1fr;
   gap: 0;
 }
 
-/* Ensures that the right section aligns its items properly */
 .flex.justify-end {
   justify-content: flex-end;
   display: flex;
   align-items: center;
 }
 
-/* Adjust space between the right section items */
 .space-x-4 > * {
   margin-right: 1rem;
 }
