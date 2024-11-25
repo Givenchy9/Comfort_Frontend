@@ -37,6 +37,7 @@
 
 <script setup>
 import Footer from '@/components/Footer.vue'
+import header3 from '@/components/header3.vue'
 </script>
 
 <style scoped>

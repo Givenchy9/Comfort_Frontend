@@ -1,5 +1,6 @@
 <template>
-  <div class="flex p-5 bg-white text-white property-page">
+  <header3/>
+  <div class="flex p-5 bg-white text-white property-page dark:bg-gray-900">
     <aside class="w-1/4 h-1/2 bg-gray-700 rounded-lg p-4 mr-4 filters">
       <div class="results-count mb-4 text-lg">
         Aantal resultaten: {{ filteredProperties.length }}
@@ -52,7 +53,7 @@
     </aside>
 
     <!-- Property Cards -->
-    <main class="properties-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-3/4">
+    <main class="properties-grid properties grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-3/4 overflow-auto">
       <div v-for="(property, index) in filteredProperties" :key="index"
         class="property-card bg-gray-600 rounded-lg p-4 cursor-pointer" @click="goToPropertyDetail(property.id)">
         <div class="property-image mb-2">
@@ -75,6 +76,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import header3 from '@/components/header3.vue';
 
 const filters = ref(Array(4).fill(false)); // Toggle switches state (Zwembad, Garage, Tuin, Zonnepanelen)
 const properties = ref([]); // All properties
@@ -222,5 +224,9 @@ function handlePriceChange() {
   font-weight: 600;
   text-align: center;
   margin-top: 10px;
+}
+
+.properties{
+  height: 80vh;
 }
 </style>

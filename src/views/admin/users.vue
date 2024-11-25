@@ -95,7 +95,7 @@
             <select v-model="editingUser.role" required class="border rounded px-3 py-2 w-full">
               <option value="basic">Basic</option>
               <option value="complete">Complete</option>
-              <option value="admin">Admin</option>
+              <!-- <option value="admin">Admin</option> -->
             </select>
           </div>
           <div class="flex justify-end">
@@ -182,12 +182,20 @@ export default {
   }
 
   // Prepare the updated user data, omit password if it's not being updated
-  const updatedUser = {
-    first_name: this.editingUser.first_name,
-    last_name: this.editingUser.last_name,
-    email: this.editingUser.email,
-    role: this.editingUser.role
-  };
+  // Add a console log to check the role being sent
+const updatedUser = {
+  first_name: this.editingUser.first_name,
+  last_name: this.editingUser.last_name,
+  email: this.editingUser.email,
+  role: this.editingUser.role // Ensure this is correct
+};
+
+console.log('Updating user with data:', updatedUser);
+
+if (this.editingUser.password) {
+  updatedUser.password = this.editingUser.password;
+}
+
 
   // Include password only if it's provided (not empty or null)
   if (this.editingUser.password) {

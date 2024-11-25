@@ -1,23 +1,43 @@
-<!-- <template>
-    <register/>
-</template>
-<script setup>
-import register from "@/components/register2.vue"
-</script> -->
 <template>
     <!-- Card start -->
     <div class="max-w-sm mx-auto mt-28 bg-white dark:bg-gray-900 rounded-lg overflow-hidden shadow-lg">
       <div class="border-b px-4 pb-6">
+        <div class="text-center my-4">
+          <!-- Avatar image -->
+          <img class="h-32 w-32 rounded-full border-4 bg-blue-500 border-white dark:border-gray-800 mx-auto my-4"
+               :src="user.avatar" alt="User Avatar">
+          <div class="py-2">
+            <!-- Display User Name -->
+            <h3 class="font-bold text-2xl text-gray-800 dark:text-white mb-1">{{ user.first_name }} {{ user.last_name }}</h3>
+            <div class="inline-flex text-gray-700 dark:text-gray-300 items-center">
+              <svg class="h-5 w-5 text-gray-400 dark:text-gray-600 mr-1" fill="currentColor"
+                   xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                <path d="M5.64 16.36a9 9 0 1 1 12.72 0l-5.65 5.66a1 1 0 0 1-1.42 0l-5.65-5.66zm11.31-1.41a7 7 0 1 0-9.9 0L12 19.9l4.95-4.95zM12 14a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
+              </svg>
+              <!-- Display User Email -->
+              {{ user.email }}
+            </div>
+          </div>
+        </div>
   
         <!-- Edit Form -->
-        <div v-if="isEditing" class="mt-6">v
+        <div v-if="isEditing" class="mt-6">
           <form @submit.prevent="updateUser">
             <div class="mb-4">
-              <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Role</label>
-              <select id="role" v-model="user.role" @change="showRoleChangePopup" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                <option value="basic">Basic</option>
-                <option value="complete">Complete</option>
-              </select>
+              <label for="first_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">First Name</label>
+              <input type="text" id="first_name" v-model="user.first_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white" required />
+            </div>
+            <div class="mb-4">
+              <label for="last_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Last Name</label>
+              <input type="text" id="last_name" v-model="user.last_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white" required />
+            </div>
+            <div class="mb-4">
+              <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+              <input type="email" id="email" v-model="user.email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white" required />
+            </div>
+            <div class="mb-4">
+              <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+              <input type="password" id="password" v-model="user.password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white" />
             </div>
             <div class="flex gap-2">
               <button type="submit" class="flex-1 rounded-full bg-blue-600 dark:bg-blue-800 text-white dark:text-white antialiased font-bold hover:bg-blue-800 dark:hover:bg-blue-900 px-4 py-2">

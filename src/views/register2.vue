@@ -101,7 +101,8 @@ const error = ref('');
 // Function to submit the form
 const submitForm = async () => {
   try {
-    const response = await axios.post('http://127.0.0.1:8000/api/register', form.value, {
+    console.log('User Token:', localStorage.getItem('token'));
+    const response = await axios.post('http://127.0.0.1:8000/api/completeregister', form.value, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}` // Assuming the token is stored in local storage
       }

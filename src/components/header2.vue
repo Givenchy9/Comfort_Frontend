@@ -7,6 +7,7 @@
           <router-link class="inline-block mr-2">
             <img src="/favicon.ico" alt="favicon" class="w-6 h-6" />
           </router-link>
+          <Darkmode/>
           <!-- <dropdown2 class="hidden sm:inline-block" />
           <button class="block sm:hidden" @click="toggleMenu">
             <i class="fa-solid fa-bars fa-xl text-white"></i>
@@ -39,7 +40,7 @@
       <!-- Login Popup Modal -->
       <div v-if="showLoginModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
         <div class="bg-white p-6 rounded shadow-lg text-center w-80">
-          <p class="text-lg font-bold mb-4">Admin...</p>
+          <adminprofile/>
           <button @click="toggleRegisterModal" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-2 w-full">
             Admin page2
           </button>
@@ -52,6 +53,7 @@
       <!-- Registration Popup Modal -->
       <div v-if="showRegisterModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
         <div class="bg-white p-6 rounded shadow-lg text-center w-80">
+          <adminaccount/>
           <button @click="toggleRegisterModal" class="bg-red-500 hover:bg-gray-700 mt-2 text-white font-bold py-2 px-4 rounded">
             Ga terug naar page 1
           </button>
@@ -120,6 +122,8 @@
   import Darkmode from '@/components/Darkmode.vue';
   import { AuthService } from '../services/authService';
   import register1 from '@/components/register1.vue';
+  import adminprofile from '@/components/adminprofile.vue';
+  import adminaccount from '@/components/adminaccount.vue';
   
   const showLoginModal = ref(false);
   const showRegisterModal = ref(false);

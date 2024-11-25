@@ -1,14 +1,13 @@
 import { createRouter, createWebHistory } from "vue-router";
 import PropertyDetail from "../views/PropertyDetail.vue";
 
-
-// Middleware to check for admin role
-function isAdmin(to: any, from: any) {
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  if (user.role === 'admin') {
-    return true; // Allow navigation
+// Middleware to check if the user has a token (logged in)
+function checkAuth(to: any, from: any, next: any) {
+  const token = localStorage.getItem('token'); // Check for token in localStorage
+  if (token) {
+    next(); // Token exists, allow navigation
   } else {
-    return '/'; // Redirect to home or login
+    next('/login'); // No token, redirect to login page
   }
 }
 
@@ -39,15 +38,14 @@ const router = createRouter({
       path: '/admin',
       name: 'admin',
       component: () => import('../views/admin.vue'),
-      beforeEnter: isAdmin, // Protect the route
       children: [
         {
-          path: 'users', // Relative path
+          path: '/users', // Relative path
           name: 'users',
           component: () => import('../views/admin/users.vue'),
         },
         {
-          path: 'huizen', // Relative path
+          path: '/AdminHuizen', // Relative path
           name: 'AdminHuizen',
           component: () => import('../views/admin/AdminHuizen.vue'),
         },
@@ -57,16 +55,25 @@ const router = createRouter({
       path: '/huizen',
       name: 'Huizen',
       component: () => import('@/views/Huizen.vue'),
+      beforeEnter: checkAuth, // Protect the route with checkAuth
+    },
+    {
+      path: '/huizen2',
+      name: 'Huizen2',
+      component: () => import('@/views/Huizen2.vue'),
+      beforeEnter: checkAuth, // Protect the route with checkAuth
     },
     {
       path: '/huizen_toevoegen',
       name: 'huizen_toevoegen',
       component: () => import('@/views/huizen_toevoegen.vue'),
+      beforeEnter: checkAuth, // Protect the route with checkAuth
     },
     {
       path: '/settings',
       name: 'settings',
       component: () => import('../views/settings.vue'),
+      beforeEnter: checkAuth, // Protect the route with checkAuth
       children: [
         {
           path: 'update_account', // No leading '/'
@@ -86,6 +93,29 @@ const router = createRouter({
       ],
     },
     {
+      path: '/settings2',
+      name: 'settings2',
+      component: () => import('../views/settings2.vue'),
+      beforeEnter: checkAuth, // Protect the route with checkAuth
+      children: [
+        {
+          path: 'update_account2', // No leading '/'
+          name: 'update_account2',
+          component: () => import('../views/settings2/update_account2.vue'),
+        },
+        {
+          path: 'profile2',
+          name: 'profile2',
+          component: () => import('../views/settings2/profile2.vue'),
+        },
+        {
+          path: 'become_complete2',
+          name: 'become_complete2',
+          component: () => import('../views/settings2/become_complete2.vue'),
+        },
+      ],
+    },
+    {
       path: '/property/:id',
       name: 'PropertyDetail',
       component: PropertyDetail,
@@ -95,6 +125,11 @@ const router = createRouter({
       path: '/huis-toevoegen',
       name: 'HuisToevoegen',
       component: () => import('../views/huis-toevoegen.vue'),
+    },
+    {
+      path: '/complete',
+      name: 'complete',
+      component: () => import('../views/HomeView2.vue'),
     },
   ],
 });

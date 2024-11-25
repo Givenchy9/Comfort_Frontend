@@ -1,4 +1,5 @@
-<!-- <template>
+<template>
+    <header3/>
     <div class="p-8">
     <h1 class="text-3xl font-bold text-blue-600 mb-6">
     {{ isAdmin ? 'Beheer Inkomende Verzoeken' : 'Voeg Een Huis Toe' }}
@@ -72,6 +73,7 @@
     
     <script setup>
     import { ref } from 'vue';
+    import header3 from '@/components/header3.vue';
     
     // Simulatie van gebruikerstoestand en rol
     const isAdmin = ref(false); // Verander naar 'true' om admin interface te testen
@@ -139,5 +141,4 @@
     opacity: 0;
     }
     </style>
-     -->
-    <template></template>
+    

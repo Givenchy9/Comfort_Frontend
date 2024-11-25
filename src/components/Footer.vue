@@ -1,15 +1,12 @@
 <template>
   <div class="page-container w-full">
-    <!-- Main content of the page -->
     <div class="content">
-      <!-- Pagina inhoud hier -->
     </div>
 
-    <!-- Footer -->
     <footer class="bg-blue-200 rounded-lg shadow dark:bg-gray-800">
       <div class="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
         <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">
-          © 2023 <a href="https://flowbite.com/" class="hover:underline">Flowbite™</a>. All Rights Reserved.
+          © 2024 <a href="https://flowbite.com/" class="hover:underline">Teun, Leon, Wesley & Givenchy™</a>/ All Rights Reserved.
         </span>
         <ul class="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
           <li>
@@ -22,7 +19,6 @@
             <a href="#" class="hover:underline me-4 md:me-6">Licensing</a>
           </li>
           <li>
-            <!-- Editor Mode Button -->
           </li>
         </ul>
       </div>
@@ -33,10 +29,8 @@
 <script setup>
 import { ref } from 'vue';
 
-// Define reactive state for editor mode
 const isEditing = ref(false);
 
-// Function to toggle editor mode
 const toggleEditorMode = () => {
   isEditing.value = !isEditing.value;
   if (!isEditing.value) {
@@ -44,14 +38,12 @@ const toggleEditorMode = () => {
   }
 };
 
-// Placeholder for the save function (replace with actual implementation)
 const saveNewsItems = () => {
   console.log('Saving news items...');
 };
 </script>
 
 <style scoped>
-/* Ensures that the body takes full height */
 .page-container {
   display: flex;
   flex-direction: column;
@@ -60,19 +52,16 @@ const saveNewsItems = () => {
    left: 0;
 }
 
-/* Ensures the content grows to take the available space */
 .content {
   flex-grow: 1;
 }
 
-/* Footer styling */
 footer {
   left: 0;
   right: 0;
   z-index: 10;
 }
 
-/* Editor Button */
 .editor-button {
   bottom: 60px;
   right: 20px;
